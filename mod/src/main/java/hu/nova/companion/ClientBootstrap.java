@@ -16,7 +16,11 @@ import hu.nova.companion.net.OnlineBridge;
 import hu.nova.companion.net.RelayPusher;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -67,6 +71,7 @@ public final class ClientBootstrap {
         MinecraftForge.EVENT_BUS.addListener(ClientBootstrap::onClientTick);
         MinecraftForge.EVENT_BUS.addListener(ClientBootstrap::onRenderOverlayPre);
         MinecraftForge.EVENT_BUS.addListener(ClientBootstrap::onScreenRenderPost);
+        MinecraftForge.EVENT_BUS.addListener(ClientBootstrap::onScreenInit);
         MinecraftForge.EVENT_BUS.addListener(CameraEffects::onCameraAngles);
     }
 
@@ -115,6 +120,22 @@ public final class ClientBootstrap {
                 && ThirstCompat.thirst(mc.player) >= 0) {
             event.setCanceled(true);
         }
+    }
+
+    private static boolean autoJoinDone = false;
+
+    /**
+     * Automatikus belépés a szerverre, amikor először megjelenik a főmenü
+     * (a hivatalos Minecraft Launcherből indítva – a Nova Launcher Quick Play-t használ helyette).
+     */
+    private static void onScreenInit(ScreenEvent.Init.Post event) {
+        if (autoJoinDone || !(event.getScreen() instanceof TitleScreen title)) return;
+        autoJoinDone = true;
+        String addr = CONFIG.autoJoinServer == null ? "" : CONFIG.autoJoinServer.trim();
+        if (addr.isEmpty() || !ServerAddress.isValidAddress(addr)) return;
+        Minecraft mc = Minecraft.getInstance();
+        mc.tell(() -> ConnectScreen.startConnecting(title, mc, ServerAddress.parseString(addr),
+                new ServerData("Nova szerver", addr, false), false));
     }
 
     /** Esc menü: valós (gép szerinti) idő a jobb felső sarokban. */

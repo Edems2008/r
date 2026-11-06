@@ -7,6 +7,7 @@ const { AuthManager } = require('./src/auth');
 const game = require('./src/game');
 const pack = require('./src/pack');
 const companion = require('./src/companion');
+const official = require('./src/official');
 
 const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'modpack.json'), 'utf8'));
 const DATA_DIR = path.join(app.getPath('appData'), '.novalauncher');
@@ -159,5 +160,22 @@ ipcMain.handle('game:play', async () => {
     send('game:state', 'closed');
     log(`HIBA: ${e.stack || e.message || e}`);
     return { ok: false, error: e.message || String(e) };
+  }
+});
+
+// Telepítés a hivatalos Minecraft Launcherbe (bejelentkezés nélkül – a hivatalos launcher fiókja indítja a játékot)
+ipcMain.handle('official:install', async () => {
+  if (running) return { ok: false, error: 'Épp fut egy telepítés vagy a játék.' };
+  running = true;
+  send('game:state', 'preparing');
+  try {
+    const r = await official.installIntoOfficial({ gameDir: GAME_DIR, dataDir: DATA_DIR, packDir: PACK_DIR, manifest, settings, log, progress });
+    return { ok: true, ...r };
+  } catch (e) {
+    log(`HIBA: ${e.stack || e.message || e}`);
+    return { ok: false, error: e.message || String(e) };
+  } finally {
+    running = null;
+    send('game:state', 'closed');
   }
 });

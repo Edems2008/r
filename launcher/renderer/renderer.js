@@ -133,6 +133,23 @@ $('btnPlay').addEventListener('click', async () => {
   }
 });
 
+// ---- telepítés a hivatalos launcherbe (bejelentkezés nélkül) ----
+$('btnOfficial').addEventListener('click', async () => {
+  settings = await nova.setSettings({ serverAddress: $('serverAddress').value.trim() });
+  $('btnOfficial').disabled = true;
+  $('btnOfficial').textContent = 'Telepítés…';
+  const r = await nova.installOfficial();
+  $('btnOfficial').disabled = false;
+  $('btnOfficial').textContent = 'Telepítés a hivatalos launcherbe';
+  if (r.ok) {
+    $('progressLabel').textContent = 'Kész – a hivatalos launcherben válaszd a „Nova Pack” telepítést.';
+    alert('Kész!\n\n1. Nyisd meg a hivatalos Minecraft Launchert (ha nyitva volt, indítsd újra).\n2. A Játék gomb melletti listából válaszd a „Nova Pack” telepítést.\n3. Nyomd meg a Játék gombot.\n\nA modok, shaderek, HUD, a telefonos térkép és az automatikus szerverbelépés ott is működik.');
+  } else {
+    alert('Nem sikerült: ' + r.error);
+    document.querySelector('[data-page="log"]').click();
+  }
+});
+
 // ---- indulás ----
 (async () => {
   const info = await nova.appInfo();

@@ -56,6 +56,7 @@ async function launch(o) {
   companion.writeConfig(gameDir, {
     companionEnabled: settings.companionEnabled !== false,
     relayUrl: settings.relayUrl || '',
+    autoJoinServer: '', // a Nova Launcher Quick Play-jel lép be, a mod ne lépjen be még egyszer
   });
 
   const authorization = await o.getAuth();

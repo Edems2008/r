@@ -60,6 +60,18 @@ cd android && ./gradlew assembleRelease
 
 > A szervernek Forge 1.20.1-esnek kell lennie, ha szerveroldali modokat is használsz. A csomag modjai (Embeddium, Oculus, Nova Companion, FerriteCore, ModernFix, EntityCulling) kliensoldaliak, így vanilla 1.20.1 szerverre is fel lehet lépni velük.
 
+### Indítás a hivatalos Minecraft Launcherből (bejelentkezés nélkül a Nova Launcherben)
+
+Ha most nem tudsz bejelentkezni a Nova Launcherben, de a **hivatalos Minecraft Launcherben be vagy jelentkezve** a saját fiókoddal:
+
+1. A Nova Launcher *Játék* fülén írd be a szerver IP-jét, majd kattints a **„Telepítés a hivatalos launcherbe”** gombra.
+   A launcher telepíti a Forge 1.20.1-et a hivatalos launcher mappájába, előkészíti a modokat/shadereket/beállításokat, és létrehoz egy **„Nova Pack”** telepítést.
+2. Nyisd meg (vagy indítsd újra) a hivatalos Minecraft Launchert, a *Játék* gomb melletti listából válaszd a **„Nova Pack”**-ot, és indítsd.
+
+Minden ugyanúgy működik (modok, shaderek, HUD, effektek, telefonos térkép), az automatikus szerverbelépést pedig ilyenkor a Nova Companion mod végzi a főmenüből. A hivatalos launcher többi telepítéséhez nem nyúl.
+
+> Tipp: a Microsoft-bejelentkezéshez nem kell hozzáférni a Gmailhez – az e-mail cím csak a felhasználónév, elég a jelszó. Az e-mail csak jelszó-visszaállításhoz kell.
+
 ### Saját modok hozzáadása
 
 - **Modrinth-ról**: írd be a mod azonosítóját (slug) a `launcher/modpack.json` `modrinth` listájába. A build letölti és SHA1-gyel ellenőrzi.

@@ -52,6 +52,11 @@ public final class CompanionConfig {
     public String onlineCode = "";
     /** Nyilvános MQTT-over-WebSocket szerverek, sorrendben próbálva. */
     public List<String> onlineBrokers = new ArrayList<>(DEFAULT_BROKERS);
+    /**
+     * Automatikus belépés erre a szerverre a főmenüből (a hivatalos Minecraft Launcherből indítva használjuk,
+     * mert ott nem lehet Quick Play argumentumot adni). Üres = kikapcsolva.
+     */
+    public String autoJoinServer = "";
     /** Hány chunk sugarú körben készüljön élő térkép. */
     public int mapRadius = 10;
     /** Vízcseppek a képernyőn, amikor kijössz a vízből. */
@@ -107,6 +112,7 @@ public final class CompanionConfig {
         if (code == null || code.isBlank()) code = randomCode(6);
         if (relayKey == null || relayKey.isBlank()) relayKey = randomCode(24);
         if (relayUrl == null) relayUrl = "";
+        if (autoJoinServer == null) autoJoinServer = "";
         if (onlineCode == null || OnlineCodeCheck.len(onlineCode) < 10) onlineCode = randomCode(10);
         if (onlineBrokers == null || onlineBrokers.isEmpty()) onlineBrokers = new ArrayList<>(DEFAULT_BROKERS);
         if (port <= 0 || port > 65535) port = 25599;

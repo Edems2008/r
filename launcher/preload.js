@@ -24,6 +24,7 @@ contextBridge.exposeInMainWorld('nova', {
   openFolder: invoke('open:folder'),
   pickJava: invoke('java:pick'),
   play: invoke('game:play'),
+  installOfficial: invoke('official:install'),
   onLog: on('log'),
   onProgress: on('progress'),
   onGameState: on('game:state'),
