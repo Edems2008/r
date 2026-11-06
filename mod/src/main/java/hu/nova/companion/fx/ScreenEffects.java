@@ -40,6 +40,10 @@ public final class ScreenEffects {
         float x, y, vx, vy, life, maxLife, size;
     }
 
+    private final Hallucinations hallucinations = new Hallucinations();
+    private final float[] streakAngle = new float[28];
+    private final float[] streakLen = new float[28];
+    private float streakTimer;
     private final List<Drop> drops = new ArrayList<>();
     private final List<Ember> embers = new ArrayList<>();
     private final Random rnd = new Random();
@@ -82,6 +86,7 @@ public final class ScreenEffects {
         if (!firstPerson) {
             drops.clear();
             embers.clear();
+            hallucinations.render(g, w, h, dt);
             return;
         }
 
@@ -101,9 +106,48 @@ public final class ScreenEffects {
 
         if (!drops.isEmpty()) renderDrops(g, w, h, dt);
 
+        // méreg: zöldes, lüktető szél a szédüléshez
+        float dizzy = CameraEffects.dizziness();
+        if (dizzy > 0.01f) {
+            float pulse = 0.65f + 0.35f * (float) Math.sin(time * 1.7f);
+            g.setColor(0.35f, 0.75f, 0.15f, Math.min(1f, 0.40f * dizzy * pulse));
+            g.blit(FxTextures.VIGNETTE, 0, 0, w, h, 0, 0, FxTextures.VIGNETTE_SIZE, FxTextures.VIGNETTE_SIZE,
+                    FxTextures.VIGNETTE_SIZE, FxTextures.VIGNETTE_SIZE);
+        }
+
+        // gyorsaság + futás: sebesség-csíkok a képernyő szélén
+        float speed = hu.nova.companion.hud.HudMotion.speedAmount();
+        if (speed > 0.05f) renderSpeedLines(g, w, h, dt, speed);
+
         g.setColor(1f, 1f, 1f, 1f);
         RenderSystem.enableDepthTest();
         RenderSystem.disableBlend();
+
+        hallucinations.render(g, w, h, dt);
+    }
+
+    private void renderSpeedLines(GuiGraphics g, int w, int h, float dt, float amount) {
+        streakTimer -= dt;
+        if (streakTimer <= 0) {
+            streakTimer = 0.045f;
+            for (int i = 0; i < streakAngle.length; i++) {
+                streakAngle[i] = rnd.nextFloat() * 360f;
+                streakLen[i] = 0.10f + rnd.nextFloat() * 0.22f;
+            }
+        }
+        float cx = w / 2f, cy = h / 2f;
+        float radius = (float) Math.sqrt(cx * cx + cy * cy);
+        g.setColor(1f, 1f, 1f, 1f);
+        for (int i = 0; i < streakAngle.length; i++) {
+            g.pose().pushPose();
+            g.pose().translate(cx, cy, 0);
+            g.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(streakAngle[i]));
+            int r1 = Math.round(radius);
+            int r0 = Math.round(radius * (1f - streakLen[i] * amount));
+            int alpha = Math.round(70 * Math.min(1f, amount)) & 0xff;
+            g.fill(r0, 0, r1, 1, (alpha << 24) | 0xFFFFFF);
+            g.pose().popPose();
+        }
     }
 
     // ------------------------------------------------------------------ víz

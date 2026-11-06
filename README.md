@@ -99,6 +99,22 @@ Csak első személyű nézetben jelennek meg:
 
 Mindegyik kapcsolható a HUD szerkesztő (**H**) gombjaival vagy a launcher *HUD* fülén. A textúrákat a mod futásidőben, kódból generálja.
 
+### Időjárás és éjjellátás
+
+- **Időjárás** (HUD elem, jobb felül az óra alatt): nap (nappal) vagy hold (éjjel) derült időben, esőfelhő esőben, hófelhő havas biomban, sötét felhő villámmal viharban. Ha esik, de a biomban nincs csapadék (pl. sivatag), felhő látszik. Viharban az ikon időnként felvillan. A szerver szinkronizálja, a telefonos appban is látszik.
+- **Éjjellátó szemüveg**: amíg rajtad van az éjjellátás, jobb felül egy zölden izzó szemüveg látszik, alatta a hátralévő idő. Az utolsó 10 másodpercben villog.
+
+### Effekt-hatások
+
+- **Méreg → szédülés**: a kép lassan imbolyog és dől, a szélek zöldesen lüktetnek. Csak vizuális, a célzást nem befolyásolja. Erősebb méregnél erősebb.
+- **Falu hőse**: az effekt megszerzése utáni első percben vidám, ugráló, különböző foglalkozású 3D falusiak jelennek meg a képernyő alján, néha smaragd pattan ki belőlük.
+- **Éhség → hallucináció**: ételek (sült hús, kenyér, alma, torta…) lebegnek és lüktetnek a képernyőn, a szélek barnásan pulzálnak. Kiváltja az Éhség effekt, vagy ha szinte üres a kaja sáv (≤ 2 comb).
+- **Szomjúság → hallucináció**: vizes üvegek lebegnek és lüktetnek, a szélek kékesen pulzálnak. Kiváltja bármelyik „thirst” effekt (pl. Tough As Nails), vagy ha szomjúság moddal szinte üres a víz sáv.
+- **Gyorsaság + futás**: az egész HUD vízszintesen megnyúlik (erősebb effektnél jobban), a képernyő szélén sebesség-csíkok suhannak.
+- **Ugrásfokozó**: ugráskor az egész HUD felfelé lebeg, majd rugalmasan visszaáll.
+
+Mind kapcsolható a HUD szerkesztő **Effektek…** gombjával, vagy a launcher *HUD* fülén.
+
 ### Realisztikus állapotsávok
 
 A vanilla szívek, combok, páncél és buborékok helyett:

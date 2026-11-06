@@ -29,30 +29,14 @@ public final class HudEditorScreen extends Screen {
     protected void init() {
         int y = this.height / 2 + 30;
         addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
-                .bounds(this.width / 2 - 102, y, 100, 20).build());
+                .bounds(this.width / 2 - 154, y, 100, 20).build());
         addRenderableWidget(Button.builder(Component.translatable("screen.novacompanion.reset"), b -> {
             ClientBootstrap.CONFIG.resetHud();
             ClientBootstrap.CONFIG.save();
-        }).bounds(this.width / 2 + 2, y, 100, 20).build());
-
-        CompanionConfig cfg = ClientBootstrap.CONFIG;
-        int y2 = y + 24;
-        addToggle(this.width / 2 - 155, y2, "Vízcseppek", () -> cfg.waterDrops, v -> cfg.waterDrops = v);
-        addToggle(this.width / 2 - 52, y2, "Esőcseppek", () -> cfg.rainDrops, v -> cfg.rainDrops = v);
-        addToggle(this.width / 2 + 51, y2, "Égés effekt", () -> cfg.fireEffect, v -> cfg.fireEffect = v);
-        addToggle(this.width / 2 - 103, y2 + 24, "Víz alatti szín", () -> cfg.underwaterTint, v -> cfg.underwaterTint = v);
-        addToggle(this.width / 2 + 0, y2 + 24, "Óra az Esc menüben", () -> cfg.pauseClock, v -> cfg.pauseClock = v);
-    }
-
-    private void addToggle(int x, int y, String name, java.util.function.BooleanSupplier get,
-                           java.util.function.Consumer<Boolean> set) {
-        java.util.function.Function<Boolean, Component> label =
-                v -> Component.literal(name + ": " + (v ? "BE" : "KI"));
-        addRenderableWidget(Button.builder(label.apply(get.getAsBoolean()), b -> {
-            boolean v = !get.getAsBoolean();
-            set.accept(v);
-            b.setMessage(label.apply(v));
-        }).bounds(x, y, 103, 20).build());
+        }).bounds(this.width / 2 - 50, y, 100, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Effektek…"),
+                b -> Minecraft.getInstance().setScreen(new EffectsScreen(this)))
+                .bounds(this.width / 2 + 54, y, 100, 20).build());
     }
 
     @Override

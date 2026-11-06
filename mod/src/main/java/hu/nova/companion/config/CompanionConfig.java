@@ -56,6 +56,16 @@ public final class CompanionConfig {
     public boolean underwaterTint = true;
     /** Valós (gép szerinti) idő az Esc menüben. */
     public boolean pauseClock = true;
+    /** Méreg: szédülés (a kamera imbolyog). */
+    public boolean poisonDizzy = true;
+    /** Éhség / szomjúság: hallucinált kaja és vizes üvegek a képernyőn. */
+    public boolean hallucinations = true;
+    /** Falu hőse: ugráló falusiak az első percben. */
+    public boolean villagerParty = true;
+    /** Gyorsaság + futás: a HUD megnyúlik, sebesség-csíkok a szélén. */
+    public boolean speedStretch = true;
+    /** Ugrásfokozó: a HUD ugráskor felfelé lebeg. */
+    public boolean jumpFloat = true;
     /** HUD elemek pozíciói. */
     public Map<String, Element> hud = new LinkedHashMap<>();
 
@@ -92,6 +102,8 @@ public final class CompanionConfig {
         hud.putIfAbsent("coords", new Element(0.0, 0.06));
         hud.putIfAbsent("clock", new Element(1.0, 0.0));
         hud.putIfAbsent("vitals", new Element(0.5, 1.0));
+        hud.putIfAbsent("weather", new Element(1.0, 0.075));
+        hud.putIfAbsent("nightvision", new Element(1.0, 0.2));
         if (!hud.containsKey("realclock")) {
             Element rc = new Element(1.0, 0.09);
             rc.enabled = false;

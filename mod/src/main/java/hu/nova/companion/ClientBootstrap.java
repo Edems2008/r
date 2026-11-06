@@ -2,6 +2,7 @@ package hu.nova.companion;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import hu.nova.companion.config.CompanionConfig;
+import hu.nova.companion.fx.CameraEffects;
 import hu.nova.companion.fx.ScreenEffects;
 import hu.nova.companion.hud.HudEditorScreen;
 import hu.nova.companion.hud.HudManager;
@@ -64,6 +65,7 @@ public final class ClientBootstrap {
         MinecraftForge.EVENT_BUS.addListener(ClientBootstrap::onClientTick);
         MinecraftForge.EVENT_BUS.addListener(ClientBootstrap::onRenderOverlayPre);
         MinecraftForge.EVENT_BUS.addListener(ClientBootstrap::onScreenRenderPost);
+        MinecraftForge.EVENT_BUS.addListener(CameraEffects::onCameraAngles);
     }
 
     private static void onRegisterOverlays(RegisterGuiOverlaysEvent event) {

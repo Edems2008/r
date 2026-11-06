@@ -68,7 +68,9 @@ async function pairingInfo(gameDir) {
   };
 }
 
-const FX_KEYS = ['waterDrops', 'rainDrops', 'fireEffect', 'underwaterTint', 'pauseClock'];
+const FX_KEYS = ['waterDrops', 'rainDrops', 'fireEffect', 'underwaterTint', 'pauseClock',
+  'poisonDizzy', 'hallucinations', 'villagerParty', 'speedStretch', 'jumpFloat'];
+const HUD_DEFAULTS = { vitals: [0.5, 1.0], clock: [1.0, 0.0], realclock: [1.0, 0.09], weather: [1.0, 0.075], nightvision: [1.0, 0.2] };
 
 /** Képernyő-effektek és óra beállításai (a mod configjában tárolva, így a játékon belüli szerkesztővel is szinkronban van). */
 function readEffects(gameDir) {
@@ -79,6 +81,8 @@ function readEffects(gameDir) {
   out.vitals = !hud.vitals || hud.vitals.enabled !== false;
   out.clock = !hud.clock || hud.clock.enabled !== false;
   out.realclock = !!(hud.realclock && hud.realclock.enabled);
+  out.weather = !hud.weather || hud.weather.enabled !== false;
+  out.nightvision = !hud.nightvision || hud.nightvision.enabled !== false;
   return out;
 }
 
@@ -86,12 +90,12 @@ function writeEffects(gameDir, patch) {
   const cfg = readConfig(gameDir);
   for (const k of FX_KEYS) if (k in patch) cfg[k] = !!patch[k];
   cfg.hud = cfg.hud || {};
-  for (const k of ['vitals', 'clock', 'realclock']) {
+  for (const k of Object.keys(HUD_DEFAULTS)) {
     if (!(k in patch)) continue;
     if (cfg.hud[k]) cfg.hud[k].enabled = !!patch[k];
     else if (patch[k] === false || k === 'realclock') {
       // még nincs pozíció -> a mod alapértelmezett helyére kerül
-      const defaults = { vitals: [0.5, 1.0], clock: [1.0, 0.0], realclock: [1.0, 0.09] }[k];
+      const defaults = HUD_DEFAULTS[k];
       cfg.hud[k] = { enabled: !!patch[k], x: defaults[0], y: defaults[1], scale: 1.0 };
     }
   }

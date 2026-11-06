@@ -108,12 +108,16 @@
           <li><b>Iránytű sáv</b>: vízszintes iránytű a képernyő tetején, fokszámmal</li>
           <li><b>Koordináták</b>: X / Y / Z, nézési irány és Nether/Felszín átszámítás</li>
           <li><b>Minecraft óra</b>: játékbeli idő, hányadik napnál tartasz, hány nap telt el (szerveren is pontos)</li>
+          <li><b>Időjárás</b>: napos / holdas, felhős, esős, havas vagy viharos ikon (szerveren is pontos)</li>
+          <li><b>Éjjellátó szemüveg</b>: jobb felül, amíg rajtad van az éjjellátás (a végén villog, alatta a hátralévő idő)</li>
           <li><b>Állapot sávok</b>: realisztikusabb HP, páncél, kaja, víz (szomjúság mod esetén) és levegő kijelzés</li>
         </ul>
         <div class="row wrap">
           <label class="check"><input type="checkbox" data-fx="clock"> Minecraft óra</label>
           <label class="check"><input type="checkbox" data-fx="vitals"> Realisztikus állapot sávok (a vanilla szívek helyett)</label>
           <label class="check"><input type="checkbox" data-fx="realclock"> Valós idő a HUD-on is</label>
+          <label class="check"><input type="checkbox" data-fx="weather"> Időjárás</label>
+          <label class="check"><input type="checkbox" data-fx="nightvision"> Éjjellátó szemüveg</label>
         </div>
         <p>Játék közben a <kbd>H</kbd> billentyűvel nyílik a <b>HUD szerkesztő</b>: húzással mozgatod, jobb klikkel ki/be kapcsolod, görgővel méretezed az elemeket.</p>
       </div>
@@ -125,6 +129,16 @@
           <label class="check"><input type="checkbox" data-fx="fireEffect"> Égés effekt tűzben és lávában (izzás + parázs)</label>
           <label class="check"><input type="checkbox" data-fx="underwaterTint"> Kékes szín víz alatt</label>
           <label class="check"><input type="checkbox" data-fx="pauseClock"> Valós (gép szerinti) idő az Esc menüben</label>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Effekt-hatások</h3>
+        <div class="row wrap">
+          <label class="check"><input type="checkbox" data-fx="poisonDizzy"> Méreg: szédülés (imbolygó kép)</label>
+          <label class="check"><input type="checkbox" data-fx="hallucinations"> Éhség / szomjúság: hallucinált kaja és vizes üvegek</label>
+          <label class="check"><input type="checkbox" data-fx="villagerParty"> Falu hőse: ugráló falusiak az első percben</label>
+          <label class="check"><input type="checkbox" data-fx="speedStretch"> Gyorsaság: futáskor megnyúló HUD és sebesség-csíkok</label>
+          <label class="check"><input type="checkbox" data-fx="jumpFloat"> Ugrásfokozó: ugráskor felfelé lebegő HUD</label>
         </div>
         <p class="muted small">Ezek a játékon belül, a HUD szerkesztő gombjaival is állíthatók. Ha a játék fut, a változás a következő indításkor lép életbe.</p>
       </div>
