@@ -1,0 +1,9 @@
+# Render.com blueprint – a repó gyökerébe másolva (vagy kézzel: Web Service, Start command: node relay/server.js)
+services:
+  - type: web
+    name: nova-relay
+    runtime: node
+    plan: free
+    buildCommand: "echo nincs build"
+    startCommand: node relay/server.js
+    healthCheckPath: /healthz

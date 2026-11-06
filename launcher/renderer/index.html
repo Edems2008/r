@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://mc-heads.net; style-src 'self' 'unsafe-inline'">
+  <title>Nova Launcher</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside>
+    <div class="brand">NOVA<span>launcher</span></div>
+    <nav>
+      <button data-page="home" class="active">🏠 Játék</button>
+      <button data-page="phone">📱 Telefon</button>
+      <button data-page="shaders">✨ Shaderek</button>
+      <button data-page="hud">🧭 HUD</button>
+      <button data-page="settings">⚙️ Beállítások</button>
+      <button data-page="log">📜 Napló</button>
+    </nav>
+    <div id="account" class="account">
+      <img id="accHead" alt="">
+      <div>
+        <div id="accName">Nincs bejelentkezve</div>
+        <button id="btnLogin" class="link">Bejelentkezés Microsofttal</button>
+        <button id="btnLogout" class="link hidden">Kijelentkezés</button>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <!-- JÁTÉK -->
+    <section id="page-home" class="page">
+      <div class="hero">
+        <h1 id="packName">Nova Pack</h1>
+        <p id="packMeta" class="muted"></p>
+      </div>
+      <div class="card">
+        <label>Szerver címe (IP)
+          <input id="serverAddress" placeholder="pl. jatek.aternos.me:12345" spellcheck="false">
+        </label>
+        <label class="check"><input type="checkbox" id="autoJoin"> Indításkor automatikus belépés a szerverre</label>
+      </div>
+      <div class="card">
+        <h3>Benne lévő modok</h3>
+        <ul id="modList" class="mods"></ul>
+        <p class="muted small">+ Nova Companion (HUD, élő térkép a telefonra) és minden .jar a csomag <code>mods</code> mappájából.
+          Saját modot a <button class="link" data-open="mods">mods mappába</button> is tehetsz.</p>
+      </div>
+    </section>
+
+    <!-- TELEFON -->
+    <section id="page-phone" class="page hidden">
+      <h2>Telefon összekötése</h2>
+      <p class="muted">Telepítsd a <b>Nova Companion</b> Android appot, vagy egyszerűen olvasd be a QR-kódot a telefon kamerájával – böngészőben is működik.
+        A telefonon élőben látod a térképet, a pozíciódat és a skinedet, amíg a játék fut.</p>
+      <div class="grid2">
+        <div class="card center">
+          <h3>Ugyanazon a WiFi-n</h3>
+          <img id="lanQr" class="qr" alt="">
+          <div class="kv"><span>Cím</span><b id="lanAddr">-</b></div>
+          <div class="kv"><span>Kód</span><b id="pairCode" class="code">-</b></div>
+          <p class="muted small">Az első indításkor a Windows tűzfal rákérdezhet – engedélyezd a Java-t a magánhálózaton.</p>
+        </div>
+        <div class="card center">
+          <h3>Interneten át (mobilnet)</h3>
+          <img id="relayQr" class="qr hidden" alt="">
+          <p id="relayHint" class="muted small">Ehhez egy Nova Relay szerver kell (ingyen futtatható Render.com-on, lásd README). Add meg a címét:</p>
+          <label>Relay címe
+            <input id="relayUrl" placeholder="https://nova-relay.onrender.com" spellcheck="false">
+          </label>
+          <div class="kv"><span>Kód</span><b id="pairCode2" class="code">-</b></div>
+        </div>
+      </div>
+      <div class="row">
+        <label class="check"><input type="checkbox" id="companionEnabled"> Telefonos kapcsolat engedélyezése</label>
+        <button id="btnNewCode" class="ghost">Új párosító kód</button>
+      </div>
+    </section>
+
+    <!-- SHADEREK -->
+    <section id="page-shaders" class="page hidden">
+      <h2>Shaderek (Oculus + Embeddium)</h2>
+      <p class="muted">Forge 1.20.1 alatt a shadereket az <b>Oculus</b> mod futtatja (az Iris Forge-os változata), az <b>Embeddium</b> pedig a gyors renderelést adja. Az OptiFine-os shaderpackok többsége működik.</p>
+      <div class="card">
+        <label class="check"><input type="checkbox" id="shadersEnabled"> Shaderek bekapcsolása</label>
+        <label>Aktív shaderpack
+          <select id="shaderPack"></select>
+        </label>
+        <div class="row">
+          <button class="ghost" data-open="shaderpacks">Shaderpacks mappa</button>
+          <button id="btnRefreshShaders" class="ghost">Lista frissítése</button>
+        </div>
+        <p class="muted small">Játék közben: Beállítások → Videóbeállítások → Shader Packs (vagy az <b>O</b> billentyű).</p>
+      </div>
+      <div class="card">
+        <h3>Népszerű shaderek letöltése</h3>
+        <div id="shaderDownloads" class="row wrap"></div>
+      </div>
+    </section>
+
+    <!-- HUD -->
+    <section id="page-hud" class="page hidden">
+      <h2>HUD elemek</h2>
+      <div class="card">
+        <ul class="features">
+          <li><b>Valós FPS számláló</b> – a játék saját mért FPS-e, színezve (zöld / sárga / piros)</li>
+          <li><b>Iránytű sáv</b> – vízszintes iránytű a képernyő tetején fokszámmal</li>
+          <li><b>Koordináták</b> – X / Y / Z, nézési irány és a Nether/Felszín átszámítás</li>
+        </ul>
+        <p>Játék közben nyomd meg a <kbd>H</kbd> billentyűt a <b>HUD szerkesztőhöz</b>:</p>
+        <ul class="features">
+          <li>húzd az egérrel oda az elemeket, ahová szeretnéd</li>
+          <li>jobb klikk: elem be/ki kapcsolása</li>
+          <li>görgő: elem méretezése (50–300%)</li>
+        </ul>
+        <p class="muted small">A billentyű a Beállítások → Irányítás menüben átállítható („Nova Companion” kategória).</p>
+      </div>
+    </section>
+
+    <!-- BEÁLLÍTÁSOK -->
+    <section id="page-settings" class="page hidden">
+      <h2>Beállítások</h2>
+      <div class="card">
+        <label>Memória (RAM): <b id="ramLabel"></b>
+          <input type="range" id="ramGb" min="2" max="16" step="1">
+        </label>
+        <label class="check"><input type="checkbox" id="fullscreen"> Teljes képernyő</label>
+        <label class="check"><input type="checkbox" id="closeOnLaunch"> Launcher elrejtése játék közben</label>
+      </div>
+      <div class="card">
+        <label>Saját Java útvonal (üresen hagyva automatikusan letölti a Java 17-et)
+          <div class="row"><input id="javaPath" placeholder="automatikus" spellcheck="false"><button id="btnPickJava" class="ghost">Tallózás</button></div>
+        </label>
+      </div>
+      <div class="card row wrap">
+        <button class="ghost" data-open="root">Játékmappa</button>
+        <button class="ghost" data-open="mods">Mods</button>
+        <button class="ghost" data-open="config">Config</button>
+        <button class="ghost" data-open="screenshots">Képernyőképek</button>
+        <button class="ghost" data-open="logs">Logok</button>
+      </div>
+      <p id="appVersion" class="muted small"></p>
+    </section>
+
+    <!-- NAPLÓ -->
+    <section id="page-log" class="page hidden">
+      <h2>Napló</h2>
+      <pre id="log"></pre>
+    </section>
+
+    <footer>
+      <div class="progress">
+        <div id="progressLabel" class="muted small">Kész az indításra</div>
+        <div class="bar"><div id="progressBar"></div></div>
+      </div>
+      <button id="btnPlay" class="play">JÁTÉK</button>
+    </footer>
+  </main>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

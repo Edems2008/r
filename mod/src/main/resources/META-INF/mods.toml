@@ -1,0 +1,30 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+issueTrackerURL="https://github.com/edems2008/r/issues"
+
+[[mods]]
+modId="novacompanion"
+version="${version}"
+displayName="Nova Companion"
+authors="Nova Launcher"
+description='''
+Mozgatható HUD (valós FPS, iránytű sáv, koordináták) és élő térkép + skin
+megosztása a Nova Companion telefonos alkalmazással.
+'''
+# Tisztán kliensoldali mod: a szervernek nem kell
+displayTest="IGNORE_ALL_VERSION"
+
+[[dependencies.novacompanion]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="CLIENT"
+
+[[dependencies.novacompanion]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.20.2)"
+    ordering="NONE"
+    side="CLIENT"

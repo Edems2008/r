@@ -1,0 +1,8 @@
+{
+  "key.categories.novacompanion": "Nova Companion",
+  "key.novacompanion.hud_editor": "Open HUD editor",
+  "screen.novacompanion.hud_editor": "HUD editor",
+  "screen.novacompanion.reset": "Reset",
+  "screen.novacompanion.help": "Drag: move  |  Right click: toggle  |  Scroll: resize",
+  "screen.novacompanion.help2": "Changes are saved when you close the editor"
+}

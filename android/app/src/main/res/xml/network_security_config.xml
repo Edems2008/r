@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A játék helyi (LAN) szervere sima HTTP-n fut, ezért engedélyezni kell a titkosítatlan forgalmat. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

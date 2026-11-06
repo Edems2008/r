@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#11151c">
+  <title>Nova Companion</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Párosítás -->
+  <section id="connect" class="screen">
+    <div class="card">
+      <h1>Nova <span>Companion</span></h1>
+      <p class="muted">Kösd össze a telefont a Nova Launcherrel. A címet és a kódot a launcher „Telefon” fülén találod (vagy olvasd be a QR-kódot).</p>
+      <label>Cím
+        <input id="inAddr" placeholder="192.168.1.10:25599  vagy  https://relay.pelda.hu" autocomplete="off" autocapitalize="off">
+      </label>
+      <label>Párosító kód
+        <input id="inCode" placeholder="ABC123" autocomplete="off" autocapitalize="characters" maxlength="12">
+      </label>
+      <button id="btnConnect" class="primary">Csatlakozás</button>
+      <p id="connectError" class="error"></p>
+      <details>
+        <summary>Mikor melyik címet használjam?</summary>
+        <p class="muted"><b>Ugyanazon a WiFi-n:</b> a gép helyi IP-je és a port (pl. 192.168.1.10:25599).<br>
+        <b>Mobilnetről / máshonnan:</b> a relay szerver címe (pl. https://nova-relay.onrender.com) – ezt a launcherben is be kell állítani.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- Fő nézet -->
+  <section id="main" class="screen hidden">
+    <header>
+      <div id="status" class="dot off"></div>
+      <div id="title">Nova Companion</div>
+      <button id="btnDisconnect" class="ghost" title="Leválasztás">⏏</button>
+    </header>
+
+    <div id="tabMap" class="tab">
+      <canvas id="map"></canvas>
+      <div id="mapInfo" class="overlay top-left"></div>
+      <div id="mapCompass" class="overlay top-right">É</div>
+      <div class="overlay bottom-right controls">
+        <button id="btnZoomIn">＋</button>
+        <button id="btnZoomOut">－</button>
+        <button id="btnFollow" class="active" title="Követés">◎</button>
+        <button id="btnRotate" title="Térkép forgatása nézési irányba">⟳</button>
+      </div>
+      <div id="offline" class="overlay center hidden">A játékos nincs bent a világban.<br><small>Indítsd el a játékot a launcherből.</small></div>
+    </div>
+
+    <div id="tabSkin" class="tab hidden">
+      <div id="skinWrap">
+        <canvas id="skin3d"></canvas>
+        <img id="skin2d" class="hidden" alt="skin">
+      </div>
+      <h2 id="skinName">-</h2>
+      <div id="stats" class="stats"></div>
+      <div class="row">
+        <button id="btnWalk" class="ghost">Séta animáció</button>
+        <button id="btnSpin" class="ghost">Forgatás</button>
+      </div>
+    </div>
+
+    <nav>
+      <button data-tab="tabMap" class="active">🗺️<span>Térkép</span></button>
+      <button data-tab="tabSkin">🧍<span>Skin</span></button>
+    </nav>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.1.0/bundles/skinview3d.bundle.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>

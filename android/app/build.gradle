@@ -1,0 +1,46 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'hu.nova.companion.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'hu.nova.companion.app'
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName '1.0.0'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // Aláírás nélküli release helyett a CI a debug kulccsal írja alá, így azonnal telepíthető.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    sourceSets {
+        main {
+            // ugyanaz a webes felület, amit a mod és a relay is kiszolgál
+            assets.srcDirs = ['src/main/assets', '../../companion-web']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.webkit:webkit:1.11.0'
+}

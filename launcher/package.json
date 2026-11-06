@@ -1,0 +1,67 @@
+{
+  "name": "nova-launcher",
+  "productName": "Nova Launcher",
+  "version": "1.0.0",
+  "description": "Egyedi Minecraft launcher Forge 1.20.1-hez beépített modokkal, shaderekkel és telefonos élő térképpel",
+  "main": "main.js",
+  "author": "Nova Launcher",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "fetch-mods": "node scripts/fetch-mods.js",
+    "check": "node scripts/check.js",
+    "dist": "electron-builder --publish never",
+    "dist:win": "electron-builder --win --publish never",
+    "dist:linux": "electron-builder --linux --publish never",
+    "dist:mac": "electron-builder --mac --publish never"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "minecraft-launcher-core": "^3.18.2",
+    "msmc": "^5.0.5",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "hu.nova.launcher",
+    "productName": "Nova Launcher",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "modpack.json",
+      "src/**/*",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "build-resources",
+        "to": "pack",
+        "filter": ["**/*", "!**/.gitkeep"]
+      }
+    ],
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Nova Launcher"
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "category": "Game"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "category": "public.app-category.games"
+    }
+  }
+}

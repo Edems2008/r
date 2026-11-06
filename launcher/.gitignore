@@ -1,0 +1,4 @@
+node_modules/
+dist/
+build-resources/mods/*.jar
+build-resources/mods-lock.json

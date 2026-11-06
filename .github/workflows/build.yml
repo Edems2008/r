@@ -1,0 +1,106 @@
+name: Build Nova
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  mod:
+    name: Forge mod (Nova Companion)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build
+        working-directory: mod
+        run: |
+          chmod +x gradlew
+          ./gradlew build --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: novacompanion-mod
+          path: mod/build/libs/novacompanion-*.jar
+
+  android:
+    name: Android app (Nova Companion)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+          cp app/build/outputs/apk/release/app-release.apk ../NovaCompanion.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: NovaCompanion.apk
+
+  launcher:
+    name: Launcher (${{ matrix.os }})
+    needs: mod
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Nova Companion mod a csomagba
+        uses: actions/download-artifact@v4
+        with:
+          name: novacompanion-mod
+          path: launcher/build-resources/mods
+      - name: Install
+        working-directory: launcher
+        run: npm ci
+      - name: Check
+        working-directory: launcher
+        run: npm run check
+      - name: Modok letöltése a telepítőbe (Modrinth)
+        working-directory: launcher
+        run: npm run fetch-mods
+      - name: Build installer
+        working-directory: launcher
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: launcher-${{ matrix.os }}
+          path: |
+            launcher/dist/*.exe
+            launcher/dist/*.AppImage
+
+  release:
+    name: GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [mod, android, launcher]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: out/**
