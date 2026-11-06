@@ -11,7 +11,10 @@ public final class HudManager {
     public static final List<HudElement> ELEMENTS = List.of(
             new CompassElement(),
             new FpsElement(),
-            new CoordsElement()
+            new CoordsElement(),
+            new ClockElement(),
+            new RealClockElement(),
+            new VitalsElement()
     );
 
     private HudManager() {}
@@ -22,7 +25,7 @@ public final class HudManager {
         if (mc.screen instanceof HudEditorScreen) return; // a szerkesztő maga rajzolja
         for (HudElement e : ELEMENTS) {
             var c = ClientBootstrap.CONFIG.element(e.id);
-            if (c.enabled) e.render(g, mc, c, width, height);
+            if (c.enabled && e.shouldRender(mc)) e.render(g, mc, c, width, height);
         }
     }
 }

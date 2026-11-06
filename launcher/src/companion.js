@@ -68,4 +68,35 @@ async function pairingInfo(gameDir) {
   };
 }
 
-module.exports = { readConfig, writeConfig, pairingInfo, randomCode };
+const FX_KEYS = ['waterDrops', 'rainDrops', 'fireEffect', 'underwaterTint', 'pauseClock'];
+
+/** Képernyő-effektek és óra beállításai (a mod configjában tárolva, így a játékon belüli szerkesztővel is szinkronban van). */
+function readEffects(gameDir) {
+  const cfg = readConfig(gameDir);
+  const out = {};
+  for (const k of FX_KEYS) out[k] = cfg[k] !== false;
+  const hud = cfg.hud || {};
+  out.vitals = !hud.vitals || hud.vitals.enabled !== false;
+  out.clock = !hud.clock || hud.clock.enabled !== false;
+  out.realclock = !!(hud.realclock && hud.realclock.enabled);
+  return out;
+}
+
+function writeEffects(gameDir, patch) {
+  const cfg = readConfig(gameDir);
+  for (const k of FX_KEYS) if (k in patch) cfg[k] = !!patch[k];
+  cfg.hud = cfg.hud || {};
+  for (const k of ['vitals', 'clock', 'realclock']) {
+    if (!(k in patch)) continue;
+    if (cfg.hud[k]) cfg.hud[k].enabled = !!patch[k];
+    else if (patch[k] === false || k === 'realclock') {
+      // még nincs pozíció -> a mod alapértelmezett helyére kerül
+      const defaults = { vitals: [0.5, 1.0], clock: [1.0, 0.0], realclock: [1.0, 0.09] }[k];
+      cfg.hud[k] = { enabled: !!patch[k], x: defaults[0], y: defaults[1], scale: 1.0 };
+    }
+  }
+  writeConfig(gameDir, cfg);
+  return readEffects(gameDir);
+}
+
+module.exports = { readConfig, writeConfig, pairingInfo, randomCode, readEffects, writeEffects };

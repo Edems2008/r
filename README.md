@@ -5,7 +5,8 @@ Egyedi Minecraft launcher, ami:
 - **beépített modokkal** érkezik: letöltöd, telepíted, és a modok már benne vannak
 - **automatikusan belép** arra a szerverre, aminek beírod az IP-jét (Minecraft Quick Play)
 - **Forge 1.20.1**-re épül, és **shadereket** is tud: Oculus (Iris Forge-ra) + Embeddium
-- saját HUD-ot ad: **valós FPS számláló**, **iránytű sáv**, **koordináták**, és ezeket **oda húzhatod a képernyőn, ahová akarod**
+- saját HUD-ot ad: **valós FPS számláló**, **iránytű sáv**, **koordináták**, **Minecraft óra napszámlálóval**, és ezeket **oda húzhatod a képernyőn, ahová akarod**
+- **realisztikusabb állapotsávok** (HP, páncél, kaja, víz/szomjúság, levegő), **képernyő-effektek** (lefolyó vízcseppek, égés), és **valós idő az Esc menüben**
 - van hozzá **Android app**, amit neten keresztül összekötsz a launcherrel. A telefonon látod a **skinedet**, és **élő térképként** is használhatod, ami szinkronban mutatja a Minecraftod térképét
 
 ```
@@ -81,6 +82,34 @@ Játék közben nyomd meg a **H** billentyűt, ez megnyitja a HUD szerkesztőt:
 - **görgő**: méret (50–300%)
 
 A pozíciókat a képernyőmérethez arányosan menti (`config/novacompanion.json`), így ablakméret-váltáskor sem csúsznak ki. A billentyű az *Irányítás* menüben átállítható.
+
+### Óra és napszámláló
+
+- **Minecraft óra** (HUD elem, alapból jobb felül): játékbeli idő (☀ nappal / ☾ éjjel), **hányadik napnál tartasz**, és **hány nap telt el**. Az időt a szerver küldi a kliensnek, így szerveren játszva is pontos.
+- **Esc menü**: a jobb felső sarokban a **valós, gép szerinti idő** (óra:perc:másodperc, dátum, a hét napja), alatta a Minecraft-idő.
+- Kérésre a valós idő a HUD-on is megjelenhet: a szerkesztőben jobb klikk a „Valós idő” elemre, vagy a launcher HUD fülén.
+
+### Képernyő-effektek
+
+Csak első személyű nézetben jelennek meg:
+- **Vízcseppek**: ha kijössz a vízből, a képernyőre cseppek tapadnak. A nagyobbak egy idő után nedves csíkot húzva lefolynak, a kisebbek elpárolognak.
+- **Eső**: esőben időnként egy-egy csepp jelenik meg a képernyőn.
+- **Égés**: tűzben vibráló, izzó szélek és felszálló parázs, lávában erősebben. Kijutás után a hő lassan elhalványul.
+- **Víz alatt**: enyhe kékes szín.
+
+Mindegyik kapcsolható a HUD szerkesztő (**H**) gombjaival vagy a launcher *HUD* fülén. A textúrákat a mod futásidőben, kódból generálja.
+
+### Realisztikus állapotsávok
+
+A vanilla szívek, combok, páncél és buborékok helyett:
+- fényes, színátmenetes sávok számértékkel és simított animációval
+- sebzéskor egy világos „sebzés-csík” lassan húzódik vissza; alacsony HP-nál pulzál a keret
+- a HP sáv színe jelzi a hatásokat: méreg (zöld), wither (fekete), fagyás (jégkék), regeneráció (rózsaszín); az elnyelés (absorption) aranyszínű
+- a kaja sávon a telítettség vékony arany csíkként látszik
+- **víz sáv**: ha fent van a **Tough As Nails** vagy a **Thirst Was Taken** szomjúság mod, a mod saját vízkijelzése helyett egy kék sáv látszik
+- a levegő sáv csak víz alatt jelenik meg
+
+Az egész egy mozgatható HUD elem („Állapot sávok”, alapból a hotbar fölött). Ha a szerkesztőben kikapcsolod, visszajönnek a vanilla kijelzések.
 
 ### Telefon (élő térkép + skin)
 

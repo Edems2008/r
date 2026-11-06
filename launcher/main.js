@@ -108,6 +108,9 @@ ipcMain.handle('pair:newCode', () => {
   return companion.pairingInfo(GAME_DIR);
 });
 
+ipcMain.handle('fx:get', () => companion.readEffects(GAME_DIR));
+ipcMain.handle('fx:set', (_e, patch) => companion.writeEffects(GAME_DIR, patch));
+
 ipcMain.handle('shaders:list', () => pack.listShaderpacks(GAME_DIR));
 ipcMain.handle('shaders:download', async (_e, slug) => {
   try { return { ok: true, file: await pack.downloadShaderpack(slug, GAME_DIR, manifest.minecraft, log, progress) }; } catch (e) {

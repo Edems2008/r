@@ -11,6 +11,15 @@ document.querySelectorAll('aside nav button').forEach((b) => b.addEventListener(
   document.querySelectorAll('.page').forEach((p) => p.classList.toggle('hidden', p.id !== 'page-' + b.dataset.page));
   if (b.dataset.page === 'phone') refreshPairing();
   if (b.dataset.page === 'shaders') refreshShaders();
+  if (b.dataset.page === 'hud') refreshEffects();
+}));
+
+async function refreshEffects() {
+  const fx = await nova.getEffects();
+  document.querySelectorAll('[data-fx]').forEach((el) => { el.checked = !!fx[el.dataset.fx]; });
+}
+document.querySelectorAll('[data-fx]').forEach((el) => el.addEventListener('change', async () => {
+  await nova.setEffects({ [el.dataset.fx]: el.checked });
 }));
 document.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => nova.openFolder(b.dataset.open)));
 

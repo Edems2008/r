@@ -17,6 +17,8 @@ contextBridge.exposeInMainWorld('nova', {
   logout: invoke('auth:logout'),
   pairInfo: invoke('pair:info'),
   newPairCode: invoke('pair:newCode'),
+  getEffects: invoke('fx:get'),
+  setEffects: invoke('fx:set'),
   listShaders: invoke('shaders:list'),
   downloadShader: invoke('shaders:download'),
   openFolder: invoke('open:folder'),

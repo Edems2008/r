@@ -100,20 +100,33 @@
 
     <!-- HUD -->
     <section id="page-hud" class="page hidden">
-      <h2>HUD elemek</h2>
+      <h2>HUD és effektek</h2>
       <div class="card">
+        <h3>HUD elemek</h3>
         <ul class="features">
-          <li><b>Valós FPS számláló</b> – a játék saját mért FPS-e, színezve (zöld / sárga / piros)</li>
-          <li><b>Iránytű sáv</b> – vízszintes iránytű a képernyő tetején fokszámmal</li>
-          <li><b>Koordináták</b> – X / Y / Z, nézési irány és a Nether/Felszín átszámítás</li>
+          <li><b>Valós FPS számláló</b>: a játék saját mért FPS-e, színezve (zöld / sárga / piros)</li>
+          <li><b>Iránytű sáv</b>: vízszintes iránytű a képernyő tetején, fokszámmal</li>
+          <li><b>Koordináták</b>: X / Y / Z, nézési irány és Nether/Felszín átszámítás</li>
+          <li><b>Minecraft óra</b>: játékbeli idő, hányadik napnál tartasz, hány nap telt el (szerveren is pontos)</li>
+          <li><b>Állapot sávok</b>: realisztikusabb HP, páncél, kaja, víz (szomjúság mod esetén) és levegő kijelzés</li>
         </ul>
-        <p>Játék közben nyomd meg a <kbd>H</kbd> billentyűt a <b>HUD szerkesztőhöz</b>:</p>
-        <ul class="features">
-          <li>húzd az egérrel oda az elemeket, ahová szeretnéd</li>
-          <li>jobb klikk: elem be/ki kapcsolása</li>
-          <li>görgő: elem méretezése (50–300%)</li>
-        </ul>
-        <p class="muted small">A billentyű a Beállítások → Irányítás menüben átállítható („Nova Companion” kategória).</p>
+        <div class="row wrap">
+          <label class="check"><input type="checkbox" data-fx="clock"> Minecraft óra</label>
+          <label class="check"><input type="checkbox" data-fx="vitals"> Realisztikus állapot sávok (a vanilla szívek helyett)</label>
+          <label class="check"><input type="checkbox" data-fx="realclock"> Valós idő a HUD-on is</label>
+        </div>
+        <p>Játék közben a <kbd>H</kbd> billentyűvel nyílik a <b>HUD szerkesztő</b>: húzással mozgatod, jobb klikkel ki/be kapcsolod, görgővel méretezed az elemeket.</p>
+      </div>
+      <div class="card">
+        <h3>Képernyő-effektek</h3>
+        <div class="row wrap">
+          <label class="check"><input type="checkbox" data-fx="waterDrops"> Vízcseppek a képernyőn, ha kijössz a vízből (lassan lefolynak)</label>
+          <label class="check"><input type="checkbox" data-fx="rainDrops"> Esőcseppek esőben</label>
+          <label class="check"><input type="checkbox" data-fx="fireEffect"> Égés effekt tűzben és lávában (izzás + parázs)</label>
+          <label class="check"><input type="checkbox" data-fx="underwaterTint"> Kékes szín víz alatt</label>
+          <label class="check"><input type="checkbox" data-fx="pauseClock"> Valós (gép szerinti) idő az Esc menüben</label>
+        </div>
+        <p class="muted small">Ezek a játékon belül, a HUD szerkesztő gombjaival is állíthatók. Ha a játék fut, a változás a következő indításkor lép életbe.</p>
       </div>
     </section>
 

@@ -163,6 +163,7 @@
       ['🌍 Dimenzió', DIMS[state.dim] || state.dim],
       ['🌲 Biom', prettyBiome(state.biome)],
       ['🕒 Játékidő', timeOfDay(state.time || 0)],
+      ['📅 Nap', state.day ? `${state.day}. nap (eltelt: ${state.day - 1})` : '-'],
       ['⚡ FPS', state.fps],
       ['👥 Játékosok a közelben', (state.players || []).length],
       ['🖥️ Szerver', state.server === 'singleplayer' ? 'Egyjátékos' : state.server],

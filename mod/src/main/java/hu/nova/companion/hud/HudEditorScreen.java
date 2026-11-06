@@ -34,6 +34,25 @@ public final class HudEditorScreen extends Screen {
             ClientBootstrap.CONFIG.resetHud();
             ClientBootstrap.CONFIG.save();
         }).bounds(this.width / 2 + 2, y, 100, 20).build());
+
+        CompanionConfig cfg = ClientBootstrap.CONFIG;
+        int y2 = y + 24;
+        addToggle(this.width / 2 - 155, y2, "Vízcseppek", () -> cfg.waterDrops, v -> cfg.waterDrops = v);
+        addToggle(this.width / 2 - 52, y2, "Esőcseppek", () -> cfg.rainDrops, v -> cfg.rainDrops = v);
+        addToggle(this.width / 2 + 51, y2, "Égés effekt", () -> cfg.fireEffect, v -> cfg.fireEffect = v);
+        addToggle(this.width / 2 - 103, y2 + 24, "Víz alatti szín", () -> cfg.underwaterTint, v -> cfg.underwaterTint = v);
+        addToggle(this.width / 2 + 0, y2 + 24, "Óra az Esc menüben", () -> cfg.pauseClock, v -> cfg.pauseClock = v);
+    }
+
+    private void addToggle(int x, int y, String name, java.util.function.BooleanSupplier get,
+                           java.util.function.Consumer<Boolean> set) {
+        java.util.function.Function<Boolean, Component> label =
+                v -> Component.literal(name + ": " + (v ? "BE" : "KI"));
+        addRenderableWidget(Button.builder(label.apply(get.getAsBoolean()), b -> {
+            boolean v = !get.getAsBoolean();
+            set.accept(v);
+            b.setMessage(label.apply(v));
+        }).bounds(x, y, 103, 20).build());
     }
 
     @Override
@@ -103,7 +122,7 @@ public final class HudEditorScreen extends Screen {
             int w = Math.round(dragging.width(mc) * c.scale);
             int h = Math.round(dragging.height(mc) * c.scale);
             double freeW = Math.max(1, width - w);
-            double freeH = Math.max(1, height - h);
+            double freeH = Math.max(1, dragging.freeHeight(c, mc, height));
             double nx = mx - grabDx;
             double ny = my - grabDy;
             // finom illesztés a szélekhez és a középvonalhoz

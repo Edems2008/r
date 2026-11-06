@@ -46,6 +46,16 @@ public final class CompanionConfig {
     public String relayKey = "";
     /** Hány chunk sugarú körben készüljön élő térkép. */
     public int mapRadius = 10;
+    /** Vízcseppek a képernyőn, amikor kijössz a vízből. */
+    public boolean waterDrops = true;
+    /** Esőcseppek a képernyőn, ha esik rád az eső. */
+    public boolean rainDrops = true;
+    /** Égés effekt (tűz / láva) és utána lassan elhalványuló hő. */
+    public boolean fireEffect = true;
+    /** Kékes színezés víz alatt. */
+    public boolean underwaterTint = true;
+    /** Valós (gép szerinti) idő az Esc menüben. */
+    public boolean pauseClock = true;
     /** HUD elemek pozíciói. */
     public Map<String, Element> hud = new LinkedHashMap<>();
 
@@ -80,6 +90,13 @@ public final class CompanionConfig {
         hud.putIfAbsent("compass", new Element(0.5, 0.0));
         hud.putIfAbsent("fps", new Element(0.0, 0.0));
         hud.putIfAbsent("coords", new Element(0.0, 0.06));
+        hud.putIfAbsent("clock", new Element(1.0, 0.0));
+        hud.putIfAbsent("vitals", new Element(0.5, 1.0));
+        if (!hud.containsKey("realclock")) {
+            Element rc = new Element(1.0, 0.09);
+            rc.enabled = false;
+            hud.put("realclock", rc);
+        }
     }
 
     public Element element(String id) {

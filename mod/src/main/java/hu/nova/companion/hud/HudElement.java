@@ -27,9 +27,24 @@ public abstract class HudElement {
         return (int) Math.round(c.x * Math.max(0, screenW - w));
     }
 
-    public int screenY(CompanionConfig.Element c, Minecraft mc, int screenH) {
+    /** Alul fenntartott hely (pl. a hotbar fölé igazított elemeknél). */
+    protected int reservedBottom() {
+        return 0;
+    }
+
+    /** Megjelenjen-e normál játék közben (a szerkesztőben mindig látszik). */
+    public boolean shouldRender(Minecraft mc) {
+        return true;
+    }
+
+    /** A függőlegesen szabadon használható terület (a pozíció arány erre vonatkozik). */
+    public int freeHeight(CompanionConfig.Element c, Minecraft mc, int screenH) {
         int h = Math.round(height(mc) * c.scale);
-        return (int) Math.round(c.y * Math.max(0, screenH - h));
+        return Math.max(0, screenH - h - reservedBottom());
+    }
+
+    public int screenY(CompanionConfig.Element c, Minecraft mc, int screenH) {
+        return (int) Math.round(c.y * freeHeight(c, mc, screenH));
     }
 
     public void render(GuiGraphics g, Minecraft mc, CompanionConfig.Element c, int screenW, int screenH) {
