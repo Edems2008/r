@@ -6,6 +6,10 @@
   "main": "main.js",
   "author": "Nova Launcher",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Edems2008/r.git"
+  },
   "scripts": {
     "start": "electron .",
     "fetch-mods": "node scripts/fetch-mods.js",
@@ -44,11 +48,17 @@
       {
         "from": "build-resources",
         "to": "pack",
-        "filter": ["**/*", "!**/.gitkeep"]
+        "filter": [
+          "**/*",
+          "!**/.gitkeep"
+        ]
       }
     ],
     "win": {
-      "target": ["nsis", "portable"]
+      "target": [
+        "nsis",
+        "portable"
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -56,12 +66,23 @@
       "shortcutName": "Nova Launcher"
     },
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Game"
     },
     "mac": {
-      "target": ["dmg"],
+      "target": [
+        "dmg"
+      ],
       "category": "public.app-category.games"
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Edems2008",
+        "repo": "r"
+      }
+    ]
   }
 }
