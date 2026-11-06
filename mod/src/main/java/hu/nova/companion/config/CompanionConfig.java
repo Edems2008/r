@@ -10,7 +10,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +46,12 @@ public final class CompanionConfig {
     public String relayUrl = "";
     /** Titkos kulcs a relay felé (csak a mod és a relay ismeri). */
     public String relayKey = "";
+    /** „Bárhonnan” kapcsolat (nyilvános MQTT szerveren át, titkosítva) – nem kell azonos hálózat. */
+    public boolean onlineEnabled = true;
+    /** 10 jegyű online kód: ebből származik a csatorna és a titkosító kulcs. */
+    public String onlineCode = "";
+    /** Nyilvános MQTT-over-WebSocket szerverek, sorrendben próbálva. */
+    public List<String> onlineBrokers = new ArrayList<>(DEFAULT_BROKERS);
     /** Hány chunk sugarú körben készüljön élő térkép. */
     public int mapRadius = 10;
     /** Vízcseppek a képernyőn, amikor kijössz a vízből. */
@@ -68,6 +76,11 @@ public final class CompanionConfig {
     public boolean jumpFloat = true;
     /** HUD elemek pozíciói. */
     public Map<String, Element> hud = new LinkedHashMap<>();
+
+    public static final List<String> DEFAULT_BROKERS = List.of(
+            "wss://broker.emqx.io:8084/mqtt",
+            "wss://broker.hivemq.com:8884/mqtt",
+            "wss://test.mosquitto.org:8081/mqtt");
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -94,6 +107,8 @@ public final class CompanionConfig {
         if (code == null || code.isBlank()) code = randomCode(6);
         if (relayKey == null || relayKey.isBlank()) relayKey = randomCode(24);
         if (relayUrl == null) relayUrl = "";
+        if (onlineCode == null || OnlineCodeCheck.len(onlineCode) < 10) onlineCode = randomCode(10);
+        if (onlineBrokers == null || onlineBrokers.isEmpty()) onlineBrokers = new ArrayList<>(DEFAULT_BROKERS);
         if (port <= 0 || port > 65535) port = 25599;
         if (mapRadius < 2) mapRadius = 2;
         if (mapRadius > 24) mapRadius = 24;
@@ -137,5 +152,12 @@ public final class CompanionConfig {
         StringBuilder sb = new StringBuilder(len);
         for (int i = 0; i < len; i++) sb.append(ALPHABET.charAt(rnd.nextInt(ALPHABET.length())));
         return sb.toString();
+    }
+
+    /** segéd: a kód hossza csak betűket és számokat számolva */
+    private static final class OnlineCodeCheck {
+        static int len(String s) {
+            return s.replaceAll("[^A-Za-z0-9]", "").length();
+        }
     }
 }

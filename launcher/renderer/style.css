@@ -118,3 +118,10 @@ footer { display: flex; align-items: center; gap: 22px; padding: 16px 34px; back
 #page-home .hero-skin img { height: 320px; }
 #page-home .pedestal { width: 210px; height: 34px; }
 @media (max-width: 1050px) { #page-home .hero-skin { display: none; } }
+
+/* online kapcsolat kártya */
+.online-card { display: flex; gap: 22px; align-items: center; border-color: rgba(74,222,128,.35); background: linear-gradient(135deg, rgba(22,101,52,.35), rgba(14,20,29,.7) 55%); }
+.online-qr .qr { margin: 0; width: 210px; height: 210px; }
+.online-info h3 { font-size: 18px; margin: 10px 0 4px; }
+.big-code { font: 800 34px/1.1 "Cascadia Code", Consolas, monospace; letter-spacing: 6px; color: #86efac; margin: 10px 0 6px; text-shadow: 0 0 22px rgba(74,222,128,.35); user-select: all; }
+.steps { margin: 6px 0 0; padding-left: 20px; color: var(--muted); } .steps li { margin: 3px 0; } .steps b { color: var(--text); }

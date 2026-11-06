@@ -24,6 +24,8 @@ function readConfig(gameDir) {
   try { cfg = JSON.parse(fs.readFileSync(configPath(gameDir), 'utf8')); } catch { /* még nincs */ }
   if (!cfg.code) cfg.code = randomCode(6);
   if (!cfg.relayKey) cfg.relayKey = randomCode(24);
+  if (!cfg.onlineCode || String(cfg.onlineCode).replace(/[^A-Za-z0-9]/g, '').length < 10) cfg.onlineCode = randomCode(10);
+  if (cfg.onlineEnabled === undefined) cfg.onlineEnabled = true;
   if (!cfg.port) cfg.port = 25599;
   if (cfg.relayUrl === undefined) cfg.relayUrl = '';
   if (cfg.companionEnabled === undefined) cfg.companionEnabled = true;
@@ -56,7 +58,14 @@ async function pairingInfo(gameDir) {
   const relayBase = (cfg.relayUrl || '').replace(/\/+$/, '');
   const relayUrl = relayBase ? `${relayBase}/?code=${cfg.code}` : null;
   const qr = (text) => (text ? QRCode.toDataURL(text, { margin: 1, width: 220 }) : null);
+  const oc = String(cfg.onlineCode).toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const onlineCode = oc.slice(0, 5) + '-' + oc.slice(5);
+  // a telefon kamerájával beolvasva egyből megnyitja a Nova Companion appot ezzel a kóddal
+  const onlineLink = `nova://pair?online=${oc}`;
   return {
+    onlineCode,
+    onlineEnabled: cfg.onlineEnabled !== false,
+    onlineQr: await QRCode.toDataURL(onlineLink, { margin: 1, width: 240 }),
     code: cfg.code,
     port: cfg.port,
     relay: relayBase,

@@ -13,19 +13,31 @@
     <div class="card">
       <div class="logo"><svg viewBox="0 0 32 32"><path d="M16 2l12 7v14l-12 7-12-7V9z" fill="#22c55e"/><path d="M16 2l12 7-12 7-12-7z" fill="#fff" opacity=".25"/><path d="M16 16v14l-12-7V9z" fill="#000" opacity=".2"/></svg></div>
       <h1>Nova <span>Companion</span></h1>
-      <p class="muted">Kösd össze a telefont a Nova Launcherrel. A címet és a kódot a launcher „Telefon” fülén találod (vagy olvasd be a QR-kódot).</p>
-      <label>Cím
-        <input id="inAddr" placeholder="192.168.1.10:25599  vagy  https://relay.pelda.hu" autocomplete="off" autocapitalize="off">
-      </label>
-      <label>Párosító kód
-        <input id="inCode" placeholder="ABC123" autocomplete="off" autocapitalize="characters" maxlength="12">
-      </label>
+      <p class="muted">Kösd össze a telefont a játékkal. A kódot a Nova Launcher <b>„Telefon”</b> fülén találod, vagy olvasd be a QR-kódot.</p>
+      <div class="seg">
+        <button data-mode="online" class="active">🌍 Bárhonnan</button>
+        <button data-mode="lan">📶 Azonos WiFi</button>
+      </div>
+      <div id="paneOnline">
+        <label>Online kód
+          <input id="inOnline" placeholder="ABCDE-12345" autocomplete="off" autocapitalize="characters" maxlength="11" inputmode="text">
+        </label>
+        <p class="muted small-note">Működik mobilnetről és bármilyen másik hálózatról is – a gépnek és a telefonnak csak internet kell. Az adatok titkosítva utaznak.</p>
+      </div>
+      <div id="paneLan" class="hidden">
+        <label>Cím
+          <input id="inAddr" placeholder="192.168.1.10:25599" autocomplete="off" autocapitalize="off">
+        </label>
+        <label>Párosító kód
+          <input id="inCode" placeholder="ABC123" autocomplete="off" autocapitalize="characters" maxlength="12">
+        </label>
+      </div>
       <button id="btnConnect" class="primary">Csatlakozás</button>
       <p id="connectError" class="error"></p>
       <details>
-        <summary>Mikor melyik címet használjam?</summary>
-        <p class="muted"><b>Ugyanazon a WiFi-n:</b> a gép helyi IP-je és a port (pl. 192.168.1.10:25599).<br>
-        <b>Mobilnetről / máshonnan:</b> a relay szerver címe (pl. https://nova-relay.onrender.com) – ezt a launcherben is be kell állítani.</p>
+        <summary>Melyiket válasszam?</summary>
+        <p class="muted"><b>Bárhonnan:</b> mindig működik, ha mindkét eszközön van internet (otthon, mobilneten, máshol). Ezt ajánljuk.<br>
+        <b>Azonos WiFi:</b> közvetlen kapcsolat a géppel, internet nélkül is megy, de csak ugyanazon a hálózaton.</p>
       </details>
     </div>
   </section>
@@ -73,6 +85,7 @@
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.1.0/bundles/skinview3d.bundle.js" defer></script>
+  <script src="online.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>

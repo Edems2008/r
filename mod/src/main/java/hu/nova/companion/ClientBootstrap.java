@@ -12,6 +12,7 @@ import hu.nova.companion.hud.VitalsElement;
 import hu.nova.companion.map.MapScanner;
 import hu.nova.companion.map.MapStore;
 import hu.nova.companion.net.CompanionHttpServer;
+import hu.nova.companion.net.OnlineBridge;
 import hu.nova.companion.net.RelayPusher;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -46,6 +47,7 @@ public final class ClientBootstrap {
     private static MapScanner scanner;
     private static CompanionHttpServer httpServer;
     private static RelayPusher relay;
+    private static OnlineBridge online;
     private static final ScreenEffects FX = new ScreenEffects();
     private static final Set<ResourceLocation> REPLACED_VANILLA = Set.of(
             VanillaGuiOverlay.PLAYER_HEALTH.id(),
@@ -91,6 +93,11 @@ public final class ClientBootstrap {
         }
         relay = new RelayPusher(STORE, () -> CONFIG.relayUrl, () -> CONFIG.code, () -> CONFIG.relayKey);
         relay.start();
+        if (CONFIG.onlineEnabled) {
+            online = new OnlineBridge(STORE, () -> CONFIG.onlineCode, () -> CONFIG.onlineBrokers);
+            online.start();
+            System.out.println("[NovaCompanion] Bárhonnan kapcsolat bekapcsolva, online kód: " + CONFIG.onlineCode);
+        }
     }
 
     /** A vanilla szívek / kaja / páncél / buborék (és a szomjúság mod saját sávja) helyett a Nova sávok látszanak. */

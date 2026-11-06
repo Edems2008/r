@@ -19,6 +19,10 @@
   let tilesSince = 0;
   let tilesEpoch = null;
   let session = 0;
+  let onlineConn = null;
+  let onlineMode = false;
+  let statusText = '';
+  let statusTimer = null;
 
   function normalizeBase(addr) {
     addr = (addr || '').trim();
@@ -48,6 +52,8 @@
       await api('/api/state');
       store.set('addr', addr.trim());
       store.set('code', code);
+      store.set('mode', 'lan');
+      onlineMode = false;
       startSession();
     } catch (e) {
       $('connectError').textContent = (e && e.message === 'Failed to fetch')
@@ -56,6 +62,36 @@
     } finally {
       $('btnConnect').disabled = false;
       $('btnConnect').textContent = 'Csatlakozás';
+    }
+  }
+
+  async function connectOnline(raw) {
+    const c = NovaOnline.normalize(raw);
+    $('connectError').textContent = '';
+    if (c.length < 10) { $('connectError').textContent = 'Az online kód 10 karakter (pl. ABCDE-12345). A launcher „Telefon” fülén találod.'; return; }
+    store.set('online', c);
+    store.set('mode', 'online');
+    onlineMode = true;
+    startSession();
+    statusText = 'Csatlakozás…';
+    try {
+      const s = session;
+      const conn = await NovaOnline.start({
+        code: c,
+        onState: (st) => { if (s !== session) return; lastStateAt = Date.now(); onState(st); updateStatus(); },
+        onTiles: (epoch, list) => {
+          if (s !== session) return;
+          if (epoch !== tilesEpoch) { tiles.clear(); tilesEpoch = epoch; }
+          for (const t of list) putTileRGB(t.x, t.z, t.rgb);
+          dirty = true;
+        },
+        onStatus: (text) => { if (s !== session) return; statusText = text; if (!state.online) $('subtitle').textContent = text; },
+      });
+      if (s !== session) { conn.stop(); return; }
+      onlineConn = conn;
+    } catch (e) {
+      disconnect();
+      $('connectError').textContent = String(e.message || e);
     }
   }
 
@@ -68,6 +104,14 @@
     $('connect').classList.add('hidden');
     $('main').classList.remove('hidden');
     resizeCanvas();
+    $('subtitle').textContent = 'Kapcsolódás…';
+    clearInterval(statusTimer);
+    statusTimer = setInterval(() => {
+      updateStatus();
+      if (onlineMode && Date.now() - lastStateAt > 10000 && state.online) { state = { online: false }; onState(state); }
+      if (onlineMode && !state.online && statusText) $('subtitle').textContent = statusText;
+    }, 1000);
+    if (onlineMode) return; // az online kapcsolat maga küldi az adatokat
     pollState(session);
     pollTiles(session);
   }
@@ -77,6 +121,10 @@
     connected = false;
     clearTimeout(stateTimer);
     clearTimeout(tilesTimer);
+    clearInterval(statusTimer);
+    if (onlineConn) { onlineConn.stop(); onlineConn = null; }
+    onlineMode = false;
+    state = { online: false };
     $('main').classList.add('hidden');
     $('connect').classList.remove('hidden');
   }
@@ -215,6 +263,12 @@
 
   function putTile(x, z, b64) {
     const bin = atob(b64);
+    const rgb = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) rgb[i] = bin.charCodeAt(i);
+    putTileRGB(x, z, rgb);
+  }
+
+  function putTileRGB(x, z, rgb) {
     let c = tiles.get(x + ',' + z);
     if (!c) {
       c = document.createElement('canvas');
@@ -224,7 +278,7 @@
     const tctx = c.getContext('2d');
     const img = tctx.createImageData(16, 16);
     for (let i = 0, j = 0; i < 256; i++, j += 3) {
-      const r = bin.charCodeAt(j), g = bin.charCodeAt(j + 1), bl = bin.charCodeAt(j + 2);
+      const r = rgb[j], g = rgb[j + 1], bl = rgb[j + 2];
       img.data[i * 4] = r; img.data[i * 4 + 1] = g; img.data[i * 4 + 2] = bl;
       img.data[i * 4 + 3] = (r | g | bl) === 0 ? 0 : 255;
     }
@@ -452,7 +506,10 @@
     $(id).addEventListener('error', () => { $(id).style.visibility = 'hidden'; });
     $(id).addEventListener('load', () => { $(id).style.visibility = ''; });
   });
-  $('btnConnect').addEventListener('click', () => connect($('inAddr').value, $('inCode').value));
+  $('btnConnect').addEventListener('click', () => {
+    if ($('btnConnect').dataset.mode === 'lan') connect($('inAddr').value, $('inCode').value);
+    else connectOnline($('inOnline').value);
+  });
   $('inCode').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btnConnect').click(); });
   $('btnDisconnect').addEventListener('click', disconnect);
   $('btnZoomIn').addEventListener('click', () => setZoom(zoom * 1.4));
@@ -482,13 +539,38 @@
   window.addEventListener('resize', () => { resizeCanvas(); resizeSkin(); });
 
   // Kezdeti értékek: URL paraméter (QR-kód) > mentett > a kiszolgáló saját címe
+  // mód-választó a párosító képernyőn
+  function setMode(m) {
+    document.querySelectorAll('.seg button').forEach((b) => b.classList.toggle('active', b.dataset.mode === m));
+    $('paneOnline').classList.toggle('hidden', m !== 'online');
+    $('paneLan').classList.toggle('hidden', m !== 'lan');
+    $('btnConnect').dataset.mode = m;
+    $('connectError').textContent = '';
+  }
+  document.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  $('inOnline').addEventListener('input', () => {
+    // automatikus formázás: ABCDE-12345
+    const n = NovaOnline.normalize($('inOnline').value).slice(0, 10);
+    $('inOnline').value = n.length > 5 ? n.slice(0, 5) + '-' + n.slice(5) : n;
+  });
+  $('inOnline').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btnConnect').click(); });
+
+  // Kezdeti értékek: URL paraméter (QR-kód / nova:// link) > mentett > a kiszolgáló saját címe
   const params = new URLSearchParams(location.search);
   const servedOverHttp = /^https?:$/.test(location.protocol);
   const initialAddr = params.get('addr') || store.get('addr', '') || (servedOverHttp ? location.origin : '');
   const initialCode = params.get('code') || store.get('code', '');
+  const initialOnline = params.get('online') || store.get('online', '');
   $('inAddr').value = params.get('addr') || (params.get('code') && servedOverHttp ? location.origin : initialAddr);
   $('inCode').value = initialCode;
+  if (initialOnline) {
+    const n = NovaOnline.normalize(initialOnline);
+    $('inOnline').value = n.length > 5 ? n.slice(0, 5) + '-' + n.slice(5) : n;
+  }
+  const startMode = params.get('online') ? 'online' : params.get('code') ? 'lan' : store.get('mode', 'online');
+  setMode(startMode);
 
   requestAnimationFrame(draw);
-  if ($('inAddr').value && initialCode) connect($('inAddr').value, initialCode);
+  if (startMode === 'online' && initialOnline) connectOnline(initialOnline);
+  else if (startMode === 'lan' && $('inAddr').value && initialCode) connect($('inAddr').value, initialCode);
 })();

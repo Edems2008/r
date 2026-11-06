@@ -80,18 +80,32 @@
       <h2>Telefon összekötése</h2>
       <p class="muted">Telepítsd a <b>Nova Companion</b> Android appot, vagy egyszerűen olvasd be a QR-kódot a telefon kamerájával – böngészőben is működik.
         A telefonon élőben látod a térképet, a pozíciódat és a skinedet, amíg a játék fut.</p>
+      <div class="card online-card">
+        <div class="online-qr"><img id="onlineQr" class="qr" alt=""></div>
+        <div class="online-info">
+          <span class="chip">AJÁNLOTT • BÁRHONNAN MŰKÖDIK</span>
+          <h3>Kapcsolat interneten át</h3>
+          <p class="muted">Nem kell ugyanazon a hálózaton lennetek: a telefon lehet mobilneten, másik WiFi-n, akár másik városban is. Semmit nem kell beállítani, az adatok titkosítva utaznak.</p>
+          <div class="big-code" id="onlineCode">-----</div>
+          <ol class="steps">
+            <li>Telepítsd a <b>Nova Companion</b> appot a telefonra.</li>
+            <li>Olvasd be a QR-kódot a telefon kamerájával, <b>vagy</b> az appban a „Bárhonnan” fülön írd be a fenti kódot.</li>
+            <li>Indítsd el a játékot – a telefonon pár másodperc múlva megjelenik a térkép.</li>
+          </ol>
+        </div>
+      </div>
       <div class="grid2">
         <div class="card center">
-          <h3>Ugyanazon a WiFi-n</h3>
+          <h3>Ugyanazon a WiFi-n (közvetlen)</h3>
           <img id="lanQr" class="qr" alt="">
           <div class="kv"><span>Cím</span><b id="lanAddr">-</b></div>
           <div class="kv"><span>Kód</span><b id="pairCode" class="code">-</b></div>
-          <p class="muted small">Az első indításkor a Windows tűzfal rákérdezhet – engedélyezd a Java-t a magánhálózaton.</p>
+          <p class="muted small">Internet nélkül is megy. Első indításkor a Windows tűzfal rákérdezhet – engedélyezd a Java-t.</p>
         </div>
         <div class="card center">
-          <h3>Interneten át (mobilnet)</h3>
+          <h3>Saját relay szerver (haladó)</h3>
           <img id="relayQr" class="qr hidden" alt="">
-          <p id="relayHint" class="muted small">Ehhez egy Nova Relay szerver kell (ingyen futtatható Render.com-on, lásd README). Add meg a címét:</p>
+          <p id="relayHint" class="muted small">Nem szükséges – csak ha saját szervert szeretnél (lásd README).</p>
           <label>Relay címe
             <input id="relayUrl" placeholder="https://nova-relay.onrender.com" spellcheck="false">
           </label>
@@ -100,7 +114,7 @@
       </div>
       <div class="row">
         <label class="check"><input type="checkbox" id="companionEnabled"> Telefonos kapcsolat engedélyezése</label>
-        <button id="btnNewCode" class="ghost">Új párosító kód</button>
+        <button id="btnNewCode" class="ghost">Új kódok generálása</button>
       </div>
     </section>
 

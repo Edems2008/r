@@ -104,7 +104,7 @@ ipcMain.handle('auth:logout', () => { auth.logout(); return true; });
 
 ipcMain.handle('pair:info', () => companion.pairingInfo(GAME_DIR));
 ipcMain.handle('pair:newCode', () => {
-  companion.writeConfig(GAME_DIR, { code: companion.randomCode(6) });
+  companion.writeConfig(GAME_DIR, { code: companion.randomCode(6), onlineCode: companion.randomCode(10) });
   return companion.pairingInfo(GAME_DIR);
 });
 

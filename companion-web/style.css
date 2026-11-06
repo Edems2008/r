@@ -97,3 +97,10 @@ nav button { flex: 1; background: none; padding: 9px 0 8px; display: flex; flex-
 nav button span { font-size: 12px; font-weight: 600; }
 nav button.active { color: var(--accent); }
 nav button.active::before { content: ""; position: absolute; top: 0; left: 35%; right: 35%; height: 3px; border-radius: 0 0 3px 3px; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+
+/* mód-választó */
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: rgba(0,0,0,.35); border: 1px solid var(--line); border-radius: 14px; padding: 4px; margin-top: 16px; }
+.seg button { background: none; padding: 10px 6px; border-radius: 10px; font-weight: 700; font-size: 14px; color: var(--muted); }
+.seg button.active { background: linear-gradient(180deg, #2b3a4f, #1e293a); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08); }
+#inOnline { letter-spacing: 5px; font-family: ui-monospace, Consolas, monospace; text-transform: uppercase; font-size: 22px; text-align: center; }
+.small-note { font-size: 12.5px; margin: 8px 2px 0; }

@@ -7,11 +7,13 @@ import android.os.Bundle
 import android.view.WindowManager
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.webkit.WebViewAssetLoader
 
 /**
  * Nova Companion – a telefonos felület egy WebView-ban fut (assets/index.html = companion-web),
@@ -20,6 +22,16 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
 
     private lateinit var web: WebView
+
+    /**
+     * A felületet egy belső https címről szolgáljuk ki (nem file://), így a WebView „biztonságos környezetnek”
+     * tekinti – ez kell a titkosításhoz (Web Crypto) az interneten át működő kapcsolatnál.
+     */
+    private val assetLoader by lazy {
+        WebViewAssetLoader.Builder()
+            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this))
+            .build()
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +52,12 @@ class MainActivity : AppCompatActivity() {
         web.setBackgroundColor(0xFF11151C.toInt())
         web.webChromeClient = WebChromeClient()
         web.webViewClient = object : WebViewClient() {
+            override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? =
+                assetLoader.shouldInterceptRequest(request.url)
+
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url
+                if (url.host == ASSET_HOST) return false
                 // külső linkek a böngészőben nyíljanak meg
                 if (url.scheme == "http" || url.scheme == "https") {
                     startActivity(Intent(Intent.ACTION_VIEW, url))
@@ -69,10 +85,12 @@ class MainActivity : AppCompatActivity() {
         web.loadUrl(startUrl(intent))
     }
 
-    /** nova://pair?addr=...&code=... -> a paraméterek átadása a webes felületnek */
+    /** nova://pair?online=KOD vagy nova://pair?addr=...&code=... -> a paraméterek átadása a webes felületnek */
     private fun startUrl(intent: Intent?): String {
-        val base = "file:///android_asset/index.html"
+        val base = "https://$ASSET_HOST/assets/index.html"
         val data: Uri = intent?.data ?: return base
+        val online = data.getQueryParameter("online")
+        if (!online.isNullOrBlank()) return base + "?online=" + Uri.encode(online)
         val addr = data.getQueryParameter("addr")
         val code = data.getQueryParameter("code")
         if (addr.isNullOrBlank() || code.isNullOrBlank()) return base
@@ -92,5 +110,9 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         web.onPause()
         super.onPause()
+    }
+
+    companion object {
+        const val ASSET_HOST = "appassets.androidplatform.net"
     }
 }

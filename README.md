@@ -139,15 +139,23 @@ Az appban:
 
 Az app ébren tartja a kijelzőt, így a telefon mellékképernyős térképként használható.
 
-#### Interneten át (nem ugyanazon a WiFi-n)
+#### Bárhonnan – interneten át (alapértelmezett, nincs mit beállítani)
 
-Alapból a telefon ugyanazon a WiFi-n közvetlenül a játékhoz csatlakozik (25599-es port). Mobilnetről vagy máshonnan a **Nova Relay** kell:
+A telefonnak és a gépnek **nem kell ugyanazon a hálózaton lennie** (mobilnet, másik WiFi, másik város – mindegy), csak internet kell mindkettőn.
 
-1. Hozz létre egy ingyenes **Web Service**-t a Render.com-on ebből a repóból. Start command: `node relay/server.js` (minta: `relay/render.yaml`).
-2. A launcher *Telefon* fülén add meg a relay címét (pl. `https://nova-relay.onrender.com`).
-3. Az appban a cím legyen a relay címe, a kód ugyanaz.
+1. A launcher *Telefon* fülén látod az **online kódot** (pl. `K7QX2-M9PLA`) és egy QR-kódot.
+2. Olvasd be a QR-kódot a telefon kamerájával (megnyitja az appot), **vagy** az appban a **„Bárhonnan”** fülön írd be a kódot.
+3. Indítsd el a játékot – pár másodperc múlva megjelenik a térkép és a skin.
 
-A mod másodpercenként feltölti az állapotot és a megváltozott térkép-darabokat, a telefon pedig a relay-ről olvassa őket. A kódhoz tartozó titkos kulcsot csak a mod ismeri, így más nem tud a te kódodra adatot küldeni.
+Hogyan működik: a mod és az app egy ingyenes, nyilvános MQTT szerveren (EMQX / HiveMQ / Mosquitto, ebben a sorrendben, automatikus átváltással) keresztül üzen egymásnak. Minden üzenet **AES-256-GCM-mel titkosított**, a kulcs és a csatorna azonosítója a kódból származik (PBKDF2, 20 000 kör) – maga a kód sosem kerül a hálózatra, a szerver üzemeltetője sem látja az adatokat. Ha valaki megkapná a kódodat, generálj újat a launcherben („Új kódok generálása”).
+
+#### Ugyanazon a WiFi-n (közvetlen)
+
+Az appban az **„Azonos WiFi”** fül: a gép helyi címe (pl. `192.168.1.10:25599`) és a 6 jegyű kód. Ez internet nélkül is megy.
+
+#### Saját relay szerver (haladó, nem szükséges)
+
+Ha a nyilvános szerverek helyett sajátot szeretnél: hozz létre egy ingyenes **Web Service**-t a Render.com-on ebből a repóból (Start command: `node relay/server.js`, minta: `relay/render.yaml`), add meg a címét a launcher *Telefon* fülén, és az appban az „Azonos WiFi” fülön a relay címét írd be címnek.
 
 ## Technikai részletek
 

@@ -85,6 +85,8 @@ function bind(id, key, kind = 'value') {
 
 async function refreshPairing() {
   const p = await nova.pairInfo();
+  $('onlineCode').textContent = p.onlineCode;
+  $('onlineQr').src = p.onlineQr;
   $('pairCode').textContent = p.code;
   $('pairCode2').textContent = p.code;
   $('lanAddr').textContent = p.lan.length ? `${p.lan[0].address}:${p.port}` : 'nincs hálózat';
