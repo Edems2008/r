@@ -11,6 +11,7 @@
   <!-- Párosítás -->
   <section id="connect" class="screen">
     <div class="card">
+      <div class="logo"><svg viewBox="0 0 32 32"><path d="M16 2l12 7v14l-12 7-12-7V9z" fill="#22c55e"/><path d="M16 2l12 7-12 7-12-7z" fill="#fff" opacity=".25"/><path d="M16 16v14l-12-7V9z" fill="#000" opacity=".2"/></svg></div>
       <h1>Nova <span>Companion</span></h1>
       <p class="muted">Kösd össze a telefont a Nova Launcherrel. A címet és a kódot a launcher „Telefon” fülén találod (vagy olvasd be a QR-kódot).</p>
       <label>Cím
@@ -32,30 +33,32 @@
   <!-- Fő nézet -->
   <section id="main" class="screen hidden">
     <header>
-      <div id="status" class="dot off"></div>
-      <div id="title">Nova Companion</div>
+      <div class="avatar-wrap"><img id="headAvatar" alt=""><div id="status" class="dot off"></div></div>
+      <div class="titles"><div id="title">Nova Companion</div><div id="subtitle">Kapcsolódás…</div></div>
       <button id="btnDisconnect" class="ghost" title="Leválasztás">⏏</button>
     </header>
 
     <div id="tabMap" class="tab">
       <canvas id="map"></canvas>
       <div id="mapInfo" class="overlay top-left"></div>
-      <div id="mapCompass" class="overlay top-right">É</div>
+      <div id="mapCompass" class="overlay top-right"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" class="ring"/><path d="M20 5l5 15h-10z" class="n"/><path d="M20 35l5-15h-10z" class="s"/><text x="20" y="13.5">É</text></svg></div>
       <div class="overlay bottom-right controls">
-        <button id="btnZoomIn">＋</button>
-        <button id="btnZoomOut">－</button>
-        <button id="btnFollow" class="active" title="Követés">◎</button>
-        <button id="btnRotate" title="Térkép forgatása nézési irányba">⟳</button>
+        <button id="btnZoomIn" title="Nagyítás"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+        <button id="btnZoomOut" title="Kicsinyítés"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+        <button id="btnFollow" class="active" title="Követés"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg></button>
+        <button id="btnRotate" title="Térkép forgatása nézési irányba"><svg viewBox="0 0 24 24"><path d="M12 3l4 9-4-2-4 2z"/><path d="M4.5 15a8 8 0 0 0 15 0"/></svg></button>
       </div>
       <div id="offline" class="overlay center hidden">A játékos nincs bent a világban.<br><small>Indítsd el a játékot a launcherből.</small></div>
     </div>
 
     <div id="tabSkin" class="tab hidden">
+      <div id="weatherCard" class="weather"></div>
       <div id="skinWrap">
         <canvas id="skin3d"></canvas>
         <img id="skin2d" class="hidden" alt="skin">
       </div>
       <h2 id="skinName">-</h2>
+      <div id="vitals" class="vitals"></div>
       <div id="stats" class="stats"></div>
       <div class="row">
         <button id="btnWalk" class="ghost">Séta animáció</button>
@@ -64,8 +67,8 @@
     </div>
 
     <nav>
-      <button data-tab="tabMap" class="active">🗺️<span>Térkép</span></button>
-      <button data-tab="tabSkin">🧍<span>Skin</span></button>
+      <button data-tab="tabMap" class="active"><svg viewBox="0 0 24 24"><path d="M9 4L3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span>Térkép</span></button>
+      <button data-tab="tabSkin"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Játékos</span></button>
     </nav>
   </section>
 

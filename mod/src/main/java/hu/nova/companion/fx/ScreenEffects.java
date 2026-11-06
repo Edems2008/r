@@ -207,12 +207,12 @@ public final class ScreenEffects {
 
     private static void drawDrop(GuiGraphics g, float x, float y, float r, float alpha) {
         if (alpha <= 0.01f) return;
-        float s = r / 12f; // a textúra csepp-sugara 12 px
+        float s = r / 22f; // a textúra csepp-sugara 22 px
         g.setColor(1f, 1f, 1f, Math.min(1f, alpha));
         g.pose().pushPose();
         g.pose().translate(x, y, 0);
         g.pose().scale(s, s, 1f);
-        g.blit(FxTextures.DROP, -16, -24, 0, 0, FxTextures.DROP_W, FxTextures.DROP_H, FxTextures.DROP_W, FxTextures.DROP_H);
+        g.blit(FxTextures.DROP, -32, -48, 0, 0, FxTextures.DROP_W, FxTextures.DROP_H, FxTextures.DROP_W, FxTextures.DROP_H);
         g.pose().popPose();
     }
 

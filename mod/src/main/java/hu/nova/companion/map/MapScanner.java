@@ -178,6 +178,7 @@ public final class MapScanner {
         o.addProperty("time", level.getDayTime() % 24000L);
         o.addProperty("day", level.getDayTime() / 24000L + 1);
         o.addProperty("weather", hu.nova.companion.hud.WeatherElement.current(mc).label);
+        o.addProperty("temp", hu.nova.companion.hud.WeatherElement.temperature(mc));
         o.addProperty("epoch", store.epoch());
         level.getBiome(p.blockPosition()).unwrapKey()
                 .ifPresent(k -> o.addProperty("biome", k.location().toString()));

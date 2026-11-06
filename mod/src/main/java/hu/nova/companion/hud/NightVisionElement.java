@@ -21,7 +21,7 @@ public final class NightVisionElement extends HudElement {
 
     @Override
     public int height(Minecraft mc) {
-        return 24 + mc.font.lineHeight;
+        return 36;
     }
 
     @Override
@@ -42,12 +42,15 @@ public final class NightVisionElement extends HudElement {
         RenderSystem.defaultBlendFunc();
         g.pose().pushPose();
         g.pose().scale(48f / FxTextures.GOGGLES_W, 24f / FxTextures.GOGGLES_H, 1f);
+        // halvány zöld fénykör a szemüveg mögött
+        g.setColor(0.3f, 1f, 0.45f, 0.25f * pulse);
+        g.blit(FxTextures.GLOW, -16, -24, 0, 0, 160, 112, 160, 112);
         g.setColor(1f, 1f, 1f, 1f);
         g.blit(FxTextures.GOGGLES, 0, 0, 0, 0, FxTextures.GOGGLES_W, FxTextures.GOGGLES_H, FxTextures.GOGGLES_W, FxTextures.GOGGLES_H);
         // izzás a lencséken
         g.setColor(0.3f, 1f, 0.4f, 0.6f * pulse);
-        for (int lx : new int[]{18, 46}) {
-            g.blit(FxTextures.GLOW, lx - 14, 2, 0, 0, 28, 28, 28, 28);
+        for (int lx : new int[]{34, 94}) {
+            g.blit(FxTextures.GLOW, lx - 24, 8, 0, 0, 48, 48, 48, 48);
         }
         g.setColor(1f, 1f, 1f, 1f);
         g.pose().popPose();
@@ -55,7 +58,9 @@ public final class NightVisionElement extends HudElement {
         if (e != null && !e.isInfiniteDuration()) {
             int sec = remaining / 20;
             String t = String.format("%d:%02d", sec / 60, sec % 60);
-            g.drawString(mc.font, t, 24 - mc.font.width(t) / 2, 25, 0xFF7CFF8A, true);
+            int tw = mc.font.width(t) + 8;
+            HudStyle.panel(g, 24 - tw / 2, 25, tw, 10);
+            HudStyle.text(g, mc.font, t, 24 - mc.font.width(t) * 0.8f / 2f, 26.5f, 0xFF7CFF8A, 0.8f);
         }
     }
 }

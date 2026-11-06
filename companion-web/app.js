@@ -126,15 +126,21 @@
     $('offline').classList.toggle('hidden', !!state.online);
     if (!state.online) { dirty = true; return; }
 
-    $('title').textContent = `${state.name} • ${state.server === 'singleplayer' ? 'Egyjátékos' : state.server}`;
+    $('title').textContent = state.name;
+    $('subtitle').textContent = (state.server === 'singleplayer' ? 'Egyjátékos világ' : state.server) +
+      (state.weather ? ` • ${state.weather}` : '') + (typeof state.temp === 'number' ? ` • ${state.temp}°C` : '');
+    if (state.uuid && $('headAvatar').dataset.uuid !== state.uuid) {
+      $('headAvatar').dataset.uuid = state.uuid;
+      $('headAvatar').src = `https://mc-heads.net/avatar/${state.uuid.replace(/-/g, '')}/64`;
+    }
     if (follow) { viewX = state.x; viewZ = state.z; }
     if (prev.x !== state.x || prev.z !== state.z || prev.yaw !== state.yaw) dirty = true;
 
     const heading = compassHeading(state.yaw);
     $('mapInfo').innerHTML =
-      `<b>${Math.floor(state.x)} / ${Math.floor(state.y)} / ${Math.floor(state.z)}</b><br>` +
-      `${DIMS[state.dim] || state.dim} • ${prettyBiome(state.biome)}<br>` +
-      `${dirName(heading)} ${Math.round(heading)}° • ${state.fps} FPS`;
+      `<div class="coords"><span class="cx"><i>X</i>${Math.floor(state.x)}</span><span class="cy"><i>Y</i>${Math.floor(state.y)}</span><span class="cz"><i>Z</i>${Math.floor(state.z)}</span></div>` +
+      `<div class="info-line">${DIMS[state.dim] || escapeHtml(String(state.dim))} • ${escapeHtml(prettyBiome(state.biome))}</div>` +
+      `<div class="info-line">${dirName(heading)} ${Math.round(heading)}° • ${state.fps} FPS</div>`;
     $('mapCompass').style.transform = `rotate(${rotateMap ? -heading : 0}deg)`;
 
     if (state.uuid && state.uuid !== lastSkinUuid) { lastSkinUuid = state.uuid; loadSkin(state.uuid, state.name); }
@@ -154,16 +160,37 @@
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }
 
+  const WEATHER_SVG = {
+    sun: '<circle cx="24" cy="24" r="9" fill="#ffd34d"/><g stroke="#ffb020" stroke-width="3" stroke-linecap="round"><path d="M24 5v5M24 38v5M5 24h5M38 24h5M10.5 10.5l3.5 3.5M34 34l3.5 3.5M10.5 37.5l3.5-3.5M34 14l3.5-3.5"/></g>',
+    moon: '<path d="M30 8a16 16 0 1 0 10 26A13 13 0 0 1 30 8z" fill="#e8e4c8"/>',
+    cloud: '<path d="M14 36h22a8 8 0 0 0 0-16 11 11 0 0 0-21-2 8 8 0 0 0-1 18z" fill="#dfe5ee"/>',
+    rain: '<path d="M14 28h22a8 8 0 0 0 0-16 11 11 0 0 0-21-2 8 8 0 0 0-1 18z" fill="#b8c2cf"/><g stroke="#6cb6ff" stroke-width="3" stroke-linecap="round"><path d="M17 33l-3 7M25 33l-3 7M33 33l-3 7"/></g>',
+    snow: '<path d="M14 28h22a8 8 0 0 0 0-16 11 11 0 0 0-21-2 8 8 0 0 0-1 18z" fill="#c9d2de"/><g fill="#fff"><circle cx="16" cy="36" r="2.4"/><circle cx="24" cy="40" r="2.4"/><circle cx="32" cy="36" r="2.4"/></g>',
+    storm: '<path d="M14 28h22a8 8 0 0 0 0-16 11 11 0 0 0-21-2 8 8 0 0 0-1 18z" fill="#6b7280"/><path d="M26 26l-7 10h5l-3 9 9-12h-5l3-7z" fill="#ffd34d"/>',
+  };
+  function weatherIcon(label) {
+    const l = (label || '').toLowerCase();
+    const k = l.includes('vihar') ? 'storm' : l.includes('hav') ? 'snow' : l.includes('eső') ? 'rain'
+      : l.includes('felhő') ? 'cloud' : l.includes('éjszaka') ? 'moon' : 'sun';
+    return `<svg viewBox="0 0 48 48">${WEATHER_SVG[k]}</svg>`;
+  }
+
+  function vitalRow(icon, value, max, from, to, text) {
+    const pct = Math.max(0, Math.min(100, (value / max) * 100));
+    return `<div class="vital"><div class="ic">${icon}</div><div class="track"><div class="fill" style="width:${pct}%;background:linear-gradient(180deg,${from},${to})"></div></div><b>${text}</b></div>`;
+  }
+
   function renderStats() {
     if (!state.online) return;
-    const hearts = (state.health / 2).toFixed(1);
+    $('weatherCard').innerHTML = `${weatherIcon(state.weather)}<div><b>${escapeHtml(state.weather || '-')}${typeof state.temp === 'number' ? ` • ${state.temp}°C` : ''}</b>` +
+      `<span>${timeOfDay(state.time || 0)} • ${state.day ? state.day + '. nap' : ''} • ${escapeHtml(prettyBiome(state.biome))}</span></div>`;
+    $('vitals').innerHTML =
+      vitalRow('❤️', state.health, state.maxHealth || 20, '#ff6b5a', '#a81414', `${(state.health / 2).toFixed(1)} / ${((state.maxHealth || 20) / 2).toFixed(0)}`) +
+      vitalRow('🍗', state.food, 20, '#f7be6a', '#a4570e', `${state.food} / 20`);
     $('stats').innerHTML = [
-      ['❤️ Életerő', `${hearts} / ${(state.maxHealth / 2).toFixed(0)}`],
-      ['🍗 Éhség', `${state.food} / 20`],
       ['🌍 Dimenzió', DIMS[state.dim] || state.dim],
       ['🌲 Biom', prettyBiome(state.biome)],
       ['🕒 Játékidő', timeOfDay(state.time || 0)],
-      ['🌦️ Időjárás', state.weather || '-'],
       ['📅 Nap', state.day ? `${state.day}. nap (eltelt: ${state.day - 1})` : '-'],
       ['⚡ FPS', state.fps],
       ['👥 Játékosok a közelben', (state.players || []).length],
@@ -242,6 +269,8 @@
     ctx.scale(scale, scale);
     ctx.translate(-viewX, -viewZ);
 
+    // természetesebb színek: a vanilla térképszínek kissé tompítva, több kontraszttal
+    ctx.filter = 'saturate(0.82) contrast(1.08) brightness(1.02)';
     const radius = Math.hypot(W, H) / 2 / scale + 16;
     const minCx = Math.floor((viewX - radius) / 16), maxCx = Math.floor((viewX + radius) / 16);
     const minCz = Math.floor((viewZ - radius) / 16), maxCz = Math.floor((viewZ + radius) / 16);
@@ -252,6 +281,17 @@
         if (t) ctx.drawImage(t, cx * 16, cz * 16, 16.02, 16.02);
       }
     }
+    ctx.filter = 'none';
+
+    // halvány chunk-rács nagy nagyításnál
+    if (zoom >= 6) {
+      ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+      ctx.lineWidth = 1 / scale;
+      ctx.beginPath();
+      for (let cx = minCx; cx <= maxCx + 1; cx++) { ctx.moveTo(cx * 16, minCz * 16); ctx.lineTo(cx * 16, (maxCz + 1) * 16); }
+      for (let cz = minCz; cz <= maxCz + 1; cz++) { ctx.moveTo(minCx * 16, cz * 16); ctx.lineTo((maxCx + 1) * 16, cz * 16); }
+      ctx.stroke();
+    }
 
     if (state.online) {
       for (const p of state.players || []) drawPlayer(p, false, scale);
@@ -260,40 +300,58 @@
   }
 
   function drawPlayer(p, self, scale) {
-    const size = (self ? 26 : 20) * (window.devicePixelRatio || 1) / scale;
+    const dpr = window.devicePixelRatio || 1;
+    const size = (self ? 26 : 20) * dpr / scale;
+    const upright = rotateMap && state.online ? compassHeading(state.yaw) * Math.PI / 180 : 0;
     ctx.save();
     ctx.translate(p.x, p.z);
-    // a fej és a felirat mindig álló helyzetben
-    if (rotateMap && state.online) ctx.rotate(compassHeading(state.yaw) * Math.PI / 180);
-    if (self) {
-      // irány-nyíl: MC yaw 0 = +Z (dél)
-      ctx.save();
-      const rad = Math.atan2(Math.cos(p.yaw * Math.PI / 180), -Math.sin(p.yaw * Math.PI / 180));
-      ctx.rotate(rad - (rotateMap ? compassHeading(state.yaw) * Math.PI / 180 : 0));
-      ctx.beginPath();
-      ctx.moveTo(size * 1.25, 0);
-      ctx.lineTo(size * 0.45, -size * 0.45);
-      ctx.lineTo(size * 0.45, size * 0.45);
-      ctx.closePath();
-      ctx.fillStyle = '#4ade80';
-      ctx.fill();
-      ctx.restore();
-    }
+    // látómező-kúp (MC yaw 0 = +Z / dél)
+    const facing = Math.atan2(Math.cos(p.yaw * Math.PI / 180), -Math.sin(p.yaw * Math.PI / 180));
+    const coneR = size * (self ? 3.6 : 2.4);
+    const grad = ctx.createRadialGradient(0, 0, size * 0.4, 0, 0, coneR);
+    grad.addColorStop(0, self ? 'rgba(74,222,128,0.55)' : 'rgba(255,255,255,0.35)');
+    grad.addColorStop(1, self ? 'rgba(74,222,128,0)' : 'rgba(255,255,255,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, coneR, facing - 0.55, facing + 0.55);
+    ctx.closePath();
+    ctx.fill();
+    ctx.rotate(upright);
+    // árnyék + keret + fej
+    ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.shadowBlur = 6 * dpr;
+    ctx.fillStyle = self ? '#4ade80' : '#f1f5f9';
+    roundRect(-size / 2 - size * 0.12, -size / 2 - size * 0.12, size * 1.24, size * 1.24, size * 0.22);
+    ctx.fill();
+    ctx.shadowBlur = 0;
     const img = headImage(p.uuid);
-    ctx.fillStyle = self ? '#4ade80' : '#ffffff';
-    ctx.fillRect(-size / 2 - size * 0.08, -size / 2 - size * 0.08, size * 1.16, size * 1.16);
     if (img.complete && img.naturalWidth) ctx.drawImage(img, -size / 2, -size / 2, size, size);
     else { ctx.fillStyle = '#60a5fa'; ctx.fillRect(-size / 2, -size / 2, size, size); }
     if (!self) {
-      ctx.font = `${size * 0.55}px system-ui, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.lineWidth = size * 0.12;
-      ctx.strokeStyle = '#000';
-      ctx.strokeText(p.name, 0, -size * 0.8);
+      // név „pirula” a fej fölött
+      ctx.font = `600 ${size * 0.55}px system-ui, sans-serif`;
+      const tw = ctx.measureText(p.name).width;
+      const ph = size * 0.8, py = -size * 1.45;
+      ctx.fillStyle = 'rgba(10,14,20,0.8)';
+      roundRect(-tw / 2 - size * 0.3, py - ph / 2, tw + size * 0.6, ph, ph / 2);
+      ctx.fill();
       ctx.fillStyle = '#fff';
-      ctx.fillText(p.name, 0, -size * 0.8);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(p.name, 0, py + size * 0.03);
     }
     ctx.restore();
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
   }
 
   function setZoom(z) {
@@ -390,6 +448,10 @@
   }
 
   // ---------- UI ----------
+  ['headAvatar', 'skin2d'].forEach((id) => {
+    $(id).addEventListener('error', () => { $(id).style.visibility = 'hidden'; });
+    $(id).addEventListener('load', () => { $(id).style.visibility = ''; });
+  });
   $('btnConnect').addEventListener('click', () => connect($('inAddr').value, $('inCode').value));
   $('inCode').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btnConnect').click(); });
   $('btnDisconnect').addEventListener('click', disconnect);

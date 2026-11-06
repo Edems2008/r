@@ -43,15 +43,22 @@ nova.onGameState((s) => {
   gameState = s;
   const btn = $('btnPlay');
   btn.disabled = s !== 'closed';
-  btn.textContent = s === 'preparing' ? 'INDÍTÁS…' : s === 'running' ? 'FUT' : 'JÁTÉK';
+  btn.querySelector('span').textContent = s === 'preparing' ? 'INDÍTÁS…' : s === 'running' ? 'FUT' : 'JÁTÉK';
+  btn.classList.toggle('busy', s !== 'closed');
   if (s === 'running') { $('progressLabel').textContent = 'A játék fut – jó szórakozást!'; $('progressBar').style.width = '100%'; }
   if (s === 'closed') { $('progressBar').style.width = '0'; }
 });
 
 // ---- fiók ----
+['heroSkin', 'accHead'].forEach((id) => {
+  $(id).addEventListener('error', () => $(id).classList.add('failed'));
+  $(id).addEventListener('load', () => $(id).classList.remove('failed'));
+});
 function renderAccount() {
   $('accName').textContent = profile ? profile.name : 'Nincs bejelentkezve';
-  $('accHead').src = profile ? `https://mc-heads.net/avatar/${profile.id}/40` : '';
+  $('accHead').src = profile ? `https://mc-heads.net/avatar/${profile.id}/64` : '';
+  $('heroSkin').src = `https://mc-heads.net/body/${profile ? profile.id : 'MHF_Steve'}/320`;
+  $('account').classList.toggle('signed', !!profile);
   $('btnLogin').classList.toggle('hidden', !!profile);
   $('btnLogout').classList.toggle('hidden', !profile);
 }
@@ -107,6 +114,12 @@ $('btnPickJava').addEventListener('click', async () => {
   if (p) { $('javaPath').value = p; settings = await nova.setSettings({ javaPath: p }); }
 });
 
+function updateStats(info) {
+  $('statMods').textContent = (info.pack.mods.length + 1);
+  $('statRam').textContent = settings.ramGb + ' GB';
+  $('statShader').textContent = settings.shadersEnabled && settings.shaderPack ? 'BE' : 'KI';
+}
+
 // ---- játék ----
 $('btnPlay').addEventListener('click', async () => {
   if (!profile) { alert('Előbb jelentkezz be a Microsoft fiókoddal (bal alul).'); return; }
@@ -150,6 +163,7 @@ $('btnPlay').addEventListener('click', async () => {
   bind('closeOnLaunch', 'closeOnLaunch', 'checked');
   bind('javaPath', 'javaPath');
   $('ramLabel').textContent = settings.ramGb + ' GB';
+  updateStats(info);
 
   $('btnLogin').textContent = 'Fiók betöltése…';
   profile = await nova.restoreLogin();

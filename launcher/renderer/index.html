@@ -7,15 +7,33 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="scene" aria-hidden="true">
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1a33"/><stop offset=".55" stop-color="#27507a"/><stop offset="1" stop-color="#f0a46a"/></linearGradient>
+        <radialGradient id="sunglow" cx=".72" cy=".62" r=".35"><stop offset="0" stop-color="#ffd59a" stop-opacity=".9"/><stop offset=".25" stop-color="#ffb46a" stop-opacity=".35"/><stop offset="1" stop-color="#ffb46a" stop-opacity="0"/></radialGradient>
+        <linearGradient id="m1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b5578"/><stop offset="1" stop-color="#22324a"/></linearGradient>
+        <linearGradient id="m2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22374f"/><stop offset="1" stop-color="#15202f"/></linearGradient>
+        <linearGradient id="m3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b3a2a"/><stop offset="1" stop-color="#0c1712"/></linearGradient>
+      </defs>
+      <rect width="1600" height="900" fill="url(#sky)"/>
+      <rect width="1600" height="900" fill="url(#sunglow)"/>
+      <circle cx="1150" cy="560" r="46" fill="#ffe2b0"/>
+      <g fill="#fff" opacity=".7"><circle cx="120" cy="80" r="1.2"/><circle cx="300" cy="140" r="1"/><circle cx="520" cy="60" r="1.4"/><circle cx="760" cy="120" r="1"/><circle cx="980" cy="50" r="1.2"/><circle cx="1320" cy="110" r="1"/><circle cx="1480" cy="70" r="1.3"/><circle cx="640" cy="200" r=".9"/><circle cx="220" cy="230" r=".8"/></g>
+      <path d="M0 600 L140 520 L230 560 L360 470 L470 540 L600 480 L720 560 L860 470 L980 540 L1100 500 L1250 560 L1400 480 L1600 560 V900 H0Z" fill="url(#m1)" opacity=".9"/>
+      <path d="M0 680 L120 640 L240 670 L380 610 L520 660 L640 620 L780 680 L900 630 L1040 670 L1180 620 L1320 680 L1460 640 L1600 670 V900 H0Z" fill="url(#m2)"/>
+      <path d="M0 760 h80 v-20 h80 v-20 h120 v30 h100 v-30 h140 v20 h120 v-40 h100 v30 h140 v-20 h120 v30 h100 v-30 h140 v20 h120 v-20 h140 V900 H0Z" fill="url(#m3)"/>
+    </svg>
+  </div>
   <aside>
-    <div class="brand">NOVA<span>launcher</span></div>
+    <div class="brand"><div class="logo"><svg viewBox="0 0 32 32"><path d="M16 2l12 7v14l-12 7-12-7V9z" fill="url(#lg)"/><path d="M16 2l12 7-12 7-12-7z" fill="#ffffff" opacity=".22"/><path d="M16 16v14l-12-7V9z" fill="#000" opacity=".18"/><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6ef0a0"/><stop offset="1" stop-color="#15934a"/></linearGradient></defs></svg></div><div><b>NOVA</b><span>launcher</span></div></div>
     <nav>
-      <button data-page="home" class="active">🏠 Játék</button>
-      <button data-page="phone">📱 Telefon</button>
-      <button data-page="shaders">✨ Shaderek</button>
-      <button data-page="hud">🧭 HUD</button>
-      <button data-page="settings">⚙️ Beállítások</button>
-      <button data-page="log">📜 Napló</button>
+      <button data-page="home" class="active"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>Játék</span></button>
+      <button data-page="phone"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg><span>Telefon</span></button>
+      <button data-page="shaders"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>Shaderek</span></button>
+      <button data-page="hud"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span>HUD és effektek</span></button>
+      <button data-page="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Beállítások</span></button>
+      <button data-page="log"><svg viewBox="0 0 24 24"><path d="M4 17l6-5-6-5"/><path d="M12 19h8"/></svg><span>Napló</span></button>
     </nav>
     <div id="account" class="account">
       <img id="accHead" alt="">
@@ -31,11 +49,20 @@
     <!-- JÁTÉK -->
     <section id="page-home" class="page">
       <div class="hero">
-        <h1 id="packName">Nova Pack</h1>
-        <p id="packMeta" class="muted"></p>
+        <div class="hero-text">
+          <span class="chip">FORGE 1.20.1 • SHADEREK • ÉLŐ TÉRKÉP</span>
+          <h1 id="packName">Nova Pack</h1>
+          <p id="packMeta" class="muted"></p>
+          <div class="stats">
+            <div><b id="statMods">-</b><span>mod</span></div>
+            <div><b id="statRam">-</b><span>RAM</span></div>
+            <div><b id="statShader">-</b><span>shader</span></div>
+          </div>
+        </div>
+        <div class="hero-skin"><img id="heroSkin" alt=""><div class="pedestal"></div></div>
       </div>
       <div class="card">
-        <label>Szerver címe (IP)
+        <label class="server-label"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/></svg> Szerver címe (IP)
           <input id="serverAddress" placeholder="pl. jatek.aternos.me:12345" spellcheck="false">
         </label>
         <label class="check"><input type="checkbox" id="autoJoin"> Indításkor automatikus belépés a szerverre</label>
@@ -180,7 +207,7 @@
         <div id="progressLabel" class="muted small">Kész az indításra</div>
         <div class="bar"><div id="progressBar"></div></div>
       </div>
-      <button id="btnPlay" class="play">JÁTÉK</button>
+      <button id="btnPlay" class="play"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg><span>JÁTÉK</span></button>
     </footer>
   </main>
 

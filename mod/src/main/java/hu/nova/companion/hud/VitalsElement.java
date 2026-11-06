@@ -3,7 +3,6 @@ package hu.nova.companion.hud;
 import hu.nova.companion.fx.FxTextures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
@@ -17,7 +16,6 @@ import net.minecraft.world.entity.player.Player;
  */
 public final class VitalsElement extends HudElement {
 
-    private static final ResourceLocation ICONS = new ResourceLocation("textures/gui/icons.png");
     private static final int W = 182;
     private static final int ROW = 11;
     private static final int ROWS = 3;
@@ -96,66 +94,67 @@ public final class VitalsElement extends HudElement {
 
         int bottom = ROW * (ROWS - 1); // alsó sor teteje
         int rightX = W - HALF;
+        int barW = HALF - 12;
+        FxTextures.ensure(mc);
 
         // ----- életerő (bal alsó) -----
         float total = maxHealth + absorption;
-        int[] hc = healthColors(p, mc);
+        int[] hc = healthColors(p);
         boolean low = health <= maxHealth * 0.3f;
         float pulse = low ? 0.5f + 0.5f * (float) Math.sin(time * 9f) : 0f;
-        barFrame(g, 11, bottom + 1, HALF - 11, 7, low ? lerpColor(0xFF000000, 0xFF8A0000, pulse) : 0xFF000000);
-        int innerW = HALF - 11;
-        fillPart(g, 11, bottom + 1, innerW, 7, trailHealth / total, 0xFFFFE0E0, 0xFFC08080);   // sebzés csík
-        fillPart(g, 11, bottom + 1, innerW, 7, shownHealth / total, hc[0], hc[1]);
+        if (low) g.fill(10, bottom, 12 + barW + 1, bottom + 9, HudStyle.withAlpha(0xFFFF2020, 0.35f * pulse));
+        HudStyle.barBackground(g, 12, bottom + 1, barW, 7);
+        // sebzés-csík (világos), majd a valódi érték
+        int trailW = Math.round(barW * Mth.clamp(trailHealth / total, 0f, 1f));
+        if (trailW > 0) g.fillGradient(12, bottom + 1, 12 + trailW, bottom + 8, 0xFFFFE4E4, 0xFFD89A9A);
+        HudStyle.barFill(g, 12, bottom + 1, barW, 7, shownHealth / total, hc[0], hc[1]);
         if (absorption > 0) {
-            int from = Math.round(innerW * (shownHealth / total));
-            int to = Math.round(innerW * ((shownHealth + absorption) / total));
-            g.fillGradient(11 + from, bottom + 1, 11 + to, bottom + 8, 0xFFFFE066, 0xFFC89B00);
+            int from = Math.round(barW * (shownHealth / total));
+            int to = Math.round(barW * Math.min(1f, (shownHealth + absorption) / total));
+            g.fillGradient(12 + from, bottom + 1, 12 + to, bottom + 8, 0xFFFFE680, 0xFFC99A00);
+            g.fill(12 + from, bottom + 1, 12 + to, bottom + 2, 0x70FFFFFF);
         }
-        gloss(g, 11, bottom + 1, innerW, 7);
-        icon(g, 0, bottom, 16, 0, 52, 0);
-        label(g, mc, 11, bottom + 1, innerW, fmt(health / 2f) + (absorption > 0 ? " +" + fmt(absorption / 2f) : "") + " / " + fmt(maxHealth / 2f));
+        HudStyle.barSegments(g, 12, bottom + 1, barW, 7, 10);
+        // a szív ikon alacsony HP-nál „dobog”
+        float beat = low ? 1f + 0.18f * Math.max(0f, (float) Math.sin(time * 9f)) : 1f;
+        float hs = 10f * beat;
+        HudStyle.icon(g, FxTextures.HEART, FxTextures.SMALL, FxTextures.SMALL, 5 - hs / 2f, bottom + 4.5f - hs / 2f, hs, hs);
+        label(g, mc, 12, bottom + 1, barW, fmt(health / 2f) + (absorption > 0 ? " +" + fmt(absorption / 2f) : "") + " / " + fmt(maxHealth / 2f));
 
         // ----- éhség (jobb alsó) -----
         boolean hungerEffect = p.hasEffect(MobEffects.HUNGER);
-        barFrame(g, rightX + 11, bottom + 1, HALF - 11, 7, 0xFF000000);
-        fillPart(g, rightX + 11, bottom + 1, HALF - 11, 7, shownFood / 20f,
-                hungerEffect ? 0xFFB5D46A : 0xFFF2B35A, hungerEffect ? 0xFF6E8A2A : 0xFFA35E12);
-        // telítettség: vékony arany csík a sáv tetején
-        fillPart(g, rightX + 11, bottom + 1, HALF - 11, 1, Math.min(saturation, 20f) / 20f, 0xFFFFF2A8, 0xFFFFF2A8);
-        gloss(g, rightX + 11, bottom + 1, HALF - 11, 7);
-        icon(g, rightX, bottom, 16, 27, hungerEffect ? 88 : 52, 27);
-        label(g, mc, rightX + 11, bottom + 1, HALF - 11, food + " / 20");
+        HudStyle.bar(g, rightX + 12, bottom + 1, barW, 7, shownFood / 20f,
+                hungerEffect ? 0xFFC4E07A : 0xFFF7BE6A, hungerEffect ? 0xFF6A8A26 : 0xFFA4570E, 10);
+        // telítettség: arany csík a sáv tetején
+        int satW = Math.round(barW * Math.min(saturation, 20f) / 20f);
+        if (satW > 0) g.fill(rightX + 12, bottom + 1, rightX + 12 + satW, bottom + 2, 0xFFFFF0A0);
+        HudStyle.icon(g, FxTextures.FOOD, FxTextures.SMALL, FxTextures.SMALL, rightX, bottom - 0.5f, 10, 10);
+        label(g, mc, rightX + 12, bottom + 1, barW, food + " / 20");
 
         // ----- páncél (bal középső) -----
         if (armor > 0) {
             int y = bottom - ROW;
-            barFrame(g, 11, y + 1, HALF - 11, 7, 0xFF000000);
-            fillPart(g, 11, y + 1, HALF - 11, 7, shownArmor / 20f, 0xFFDCE4EE, 0xFF7C8898);
-            gloss(g, 11, y + 1, HALF - 11, 7);
-            icon(g, 0, y, -1, -1, 34, 9);
-            label(g, mc, 11, y + 1, HALF - 11, armor + " / 20");
+            HudStyle.bar(g, 12, y + 1, barW, 7, shownArmor / 20f, 0xFFE8EEF5, 0xFF808C9C, 10);
+            HudStyle.icon(g, FxTextures.ARMOR, FxTextures.SMALL, FxTextures.SMALL, 0, y - 0.5f, 10, 10);
+            label(g, mc, 12, y + 1, barW, armor + " / 20");
         }
 
         // ----- víz / szomjúság és levegő (jobb oldalon felfelé) -----
         int rowY = bottom - ROW;
         if (shownThirst >= 0) {
-            barFrame(g, rightX + 11, rowY + 1, HALF - 11, 7, 0xFF000000);
-            fillPart(g, rightX + 11, rowY + 1, HALF - 11, 7, shownThirst / 20f, 0xFF6EC8FF, 0xFF1666C8);
-            gloss(g, rightX + 11, rowY + 1, HALF - 11, 7);
-            dropIcon(g, mc, rightX + 1, rowY);
-            label(g, mc, rightX + 11, rowY + 1, HALF - 11, thirst + " / 20");
+            HudStyle.bar(g, rightX + 12, rowY + 1, barW, 7, shownThirst / 20f, 0xFF7FD0FF, 0xFF1462C4, 10);
+            HudStyle.icon(g, FxTextures.WATER, FxTextures.SMALL, FxTextures.SMALL, rightX, rowY - 0.5f, 10, 10);
+            label(g, mc, rightX + 12, rowY + 1, barW, thirst + " / 20");
             rowY -= ROW;
         }
         if (showAir) {
-            barFrame(g, rightX + 11, rowY + 1, HALF - 11, 7, 0xFF000000);
-            fillPart(g, rightX + 11, rowY + 1, HALF - 11, 7, Math.max(0, shownAir) / maxAir, 0xFFB8F4FF, 0xFF3AA8C8);
-            gloss(g, rightX + 11, rowY + 1, HALF - 11, 7);
-            icon(g, rightX, rowY, -1, -1, 16, 18);
-            label(g, mc, rightX + 11, rowY + 1, HALF - 11, Math.max(0, Math.round(air / 20f)) + " mp");
+            HudStyle.bar(g, rightX + 12, rowY + 1, barW, 7, Math.max(0, shownAir) / maxAir, 0xFFC8F6FF, 0xFF3AA2C4, 10);
+            HudStyle.icon(g, FxTextures.BUBBLE, FxTextures.SMALL, FxTextures.SMALL, rightX, rowY - 0.5f, 10, 10);
+            label(g, mc, rightX + 12, rowY + 1, barW, Math.max(0, Math.round(air / 20f)) + " mp");
         }
     }
 
-    private static int[] healthColors(Player p, Minecraft mc) {
+    private static int[] healthColors(Player p) {
         if (p.hasEffect(MobEffects.WITHER)) return new int[]{0xFF5A5A5A, 0xFF1E1E1E};
         if (p.hasEffect(MobEffects.POISON)) return new int[]{0xFF9BD34A, 0xFF4A7A12};
         if (p.isFullyFrozen() || p.getTicksFrozen() > 0) return new int[]{0xFFBEE8FF, 0xFF5A9CC8};
@@ -163,38 +162,10 @@ public final class VitalsElement extends HudElement {
         return new int[]{0xFFFF5A4A, 0xFFA81414};
     }
 
-    private static void barFrame(GuiGraphics g, int x, int y, int w, int h, int border) {
-        g.fill(x - 1, y - 1, x + w + 1, y + h + 1, border | 0xFF000000);
-        g.fillGradient(x, y, x + w, y + h, 0xC0201818, 0xC0080606);
-    }
 
-    private static void fillPart(GuiGraphics g, int x, int y, int w, int h, float frac, int top, int bottom) {
-        int fw = Math.round(w * Mth.clamp(frac, 0f, 1f));
-        if (fw > 0) g.fillGradient(x, y, x + fw, y + h, top, bottom);
-    }
 
-    /** fényes felső él + sötétebb alsó él = „üveges” hatás */
-    private static void gloss(GuiGraphics g, int x, int y, int w, int h) {
-        g.fill(x, y, x + w, y + 1, 0x50FFFFFF);
-        g.fill(x, y + h - 1, x + w, y + h, 0x30000000);
-    }
 
-    private static void icon(GuiGraphics g, int x, int y, int bgU, int bgV, int u, int v) {
-        if (bgU >= 0) g.blit(ICONS, x, y, bgU, bgV, 9, 9);
-        g.blit(ICONS, x, y, u, v, 9, 9);
-    }
 
-    private static void dropIcon(GuiGraphics g, Minecraft mc, int x, int y) {
-        FxTextures.ensure(mc);
-        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
-        g.setColor(0.35f, 0.65f, 1f, 1f);
-        g.pose().pushPose();
-        g.pose().translate(x, y - 1, 0);
-        g.pose().scale(7f / FxTextures.DROP_W * 1.2f, 10f / FxTextures.DROP_H * 1.1f, 1f);
-        g.blit(FxTextures.DROP, 0, 0, 0, 0, FxTextures.DROP_W, FxTextures.DROP_H, FxTextures.DROP_W, FxTextures.DROP_H);
-        g.pose().popPose();
-        g.setColor(1f, 1f, 1f, 1f);
-    }
 
     private static void label(GuiGraphics g, Minecraft mc, int x, int y, int w, String text) {
         float s = 0.62f;
