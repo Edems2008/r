@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { Client } = require('minecraft-launcher-core');
 const { ensureJava } = require('./java');
-const { download } = require('./net');
+const { ensureMavenFile } = require('./net');
 const { syncMods, writeShaderConfig } = require('./pack');
 const companion = require('./companion');
 
@@ -21,10 +21,9 @@ function parseServer(input) {
 async function ensureForge(gameDir, mc, forge, log, progress) {
   const name = `forge-${mc}-${forge}-installer.jar`;
   const file = path.join(gameDir, 'installers', name);
-  if (fs.existsSync(file)) return file;
-  log(`Forge ${mc}-${forge} letöltése…`);
+  log(`Forge ${mc}-${forge} ellenőrzése…`);
   const url = `https://maven.minecraftforge.net/net/minecraftforge/forge/${mc}-${forge}/${name}`;
-  await download(url, file, { onProgress: (d, t) => progress('Forge', d, t) });
+  await ensureMavenFile(url, file, { log, onProgress: (d, t) => progress('Forge', d, t) });
   return file;
 }
 

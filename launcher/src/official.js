@@ -12,7 +12,7 @@ const { spawn } = require('child_process');
 const { ensureJava } = require('./java');
 const { syncMods, writeShaderConfig } = require('./pack');
 const companion = require('./companion');
-const { download } = require('./net');
+const { ensureMavenFile } = require('./net');
 const { parseServer } = require('./game');
 
 const PROFILE_ID = 'nova-pack';
@@ -59,11 +59,9 @@ async function installIntoOfficial({ gameDir, dataDir, packDir, manifest, settin
     const javaCli = javaPath.replace(/javaw\.exe$/i, 'java.exe');
     const name = `forge-${manifest.minecraft}-${manifest.forge}-installer.jar`;
     const installer = path.join(gameDir, 'installers', name);
-    if (!fs.existsSync(installer)) {
-      log(`Forge ${manifest.minecraft}-${manifest.forge} letöltése…`);
-      await download(`https://maven.minecraftforge.net/net/minecraftforge/forge/${manifest.minecraft}-${manifest.forge}/${name}`,
-        installer, { onProgress: (d, t) => progress('Forge', d, t) });
-    }
+    log(`Forge ${manifest.minecraft}-${manifest.forge} telepítő ellenőrzése / letöltése…`);
+    await ensureMavenFile(`https://maven.minecraftforge.net/net/minecraftforge/forge/${manifest.minecraft}-${manifest.forge}/${name}`,
+      installer, { log, onProgress: (d, t) => progress('Forge', d, t) });
     log('Forge telepítése a hivatalos Minecraft Launcherbe (ez 1-2 perc lehet)…');
     progress('Forge telepítése', 0, 0);
     await run(javaCli, ['-jar', installer, '--installClient', mcDir], log);

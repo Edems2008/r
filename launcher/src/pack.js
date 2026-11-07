@@ -2,7 +2,7 @@
 /* Modpack szinkron: a telepítőbe csomagolt modok bemásolása, hiány esetén letöltése a Modrinth-ról. */
 const fs = require('fs');
 const path = require('path');
-const { download, sha1File } = require('./net');
+const { downloadWithRetry, sha1File } = require('./net');
 const { resolveLatest } = require('./modrinth');
 
 const MANAGED_FILE = '.nova-managed.json';
@@ -65,7 +65,7 @@ async function syncMods(packDir, gameDir, manifest, log, progress) {
       }
     } else if (!fs.existsSync(dest) || sha1File(dest) !== src.sha1) {
       log(`Mod letöltése: ${name}`);
-      await download(src.url, dest, { sha1: src.sha1 });
+      await downloadWithRetry(src.url, dest, { sha1: src.sha1 }, log);
     }
   }
   fs.writeFileSync(managedPath, JSON.stringify([...wanted.keys()], null, 2));
@@ -92,7 +92,7 @@ async function downloadShaderpack(slug, gameDir, gameVersion, log, progress) {
   const dest = path.join(gameDir, 'shaderpacks', r.filename);
   if (fs.existsSync(dest)) return r.filename;
   log(`Shader letöltése: ${r.filename}`);
-  await download(r.url, dest, { sha1: r.sha1, onProgress: (d, t) => progress('Shader', d, t) });
+  await downloadWithRetry(r.url, dest, { sha1: r.sha1, onProgress: (d, t) => progress('Shader', d, t) }, log);
   return r.filename;
 }
 
