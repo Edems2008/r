@@ -82,7 +82,7 @@ app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(
 // ---- IPC ----
 ipcMain.handle('app:info', () => ({
   version: `${app.getVersion()} (build ${BUILD})`,
-  pack: { name: manifest.name, minecraft: manifest.minecraft, forge: manifest.forge, mods: manifest.modrinth, shaderpacks: manifest.shaderpacks },
+  pack: { name: manifest.name, minecraft: manifest.minecraft, forge: manifest.forge === 'latest' ? 'legújabb' : manifest.forge, mods: manifest.modrinth, shaderpacks: manifest.shaderpacks },
   totalRamGb,
   gameDir: GAME_DIR,
 }));

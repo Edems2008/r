@@ -2,18 +2,43 @@
   "_info": "A launcher ebből a listából állítja össze a modpackot. A 'modrinth' listában lévő modokat a build (és szükség esetén a launcher) a Modrinth-ról tölti le, ellenőrzött SHA1-gyel. Saját .jar modokat a build-resources/mods mappába tehetsz, azok is bekerülnek a telepítőbe.",
   "name": "Nova Pack",
   "minecraft": "1.20.1",
-  "forge": "47.3.0",
+  "forge": "latest",
+  "forgeFallback": "47.3.0",
   "defaultServer": "",
   "modrinth": [
-    { "slug": "embeddium", "why": "Sodium-alapú renderelő Forge-ra – jóval több FPS, az Oculus igényli" },
-    { "slug": "oculus", "why": "Iris shader támogatás Forge 1.20.1-re (OptiFine shaderek)" },
-    { "slug": "ferrite-core", "why": "Kevesebb memóriahasználat" },
-    { "slug": "modernfix", "why": "Gyorsabb indulás, kevesebb RAM" },
-    { "slug": "entityculling", "why": "Nem látható entitások kihagyása renderelésnél" }
+    {
+      "slug": "embeddium",
+      "why": "Sodium-alapú renderelő Forge-ra – jóval több FPS, az Oculus igényli"
+    },
+    {
+      "slug": "oculus",
+      "why": "Iris shader támogatás Forge 1.20.1-re (OptiFine shaderek)"
+    },
+    {
+      "slug": "ferrite-core",
+      "why": "Kevesebb memóriahasználat"
+    },
+    {
+      "slug": "modernfix",
+      "why": "Gyorsabb indulás, kevesebb RAM"
+    },
+    {
+      "slug": "entityculling",
+      "why": "Nem látható entitások kihagyása renderelésnél"
+    }
   ],
   "shaderpacks": [
-    { "slug": "complementary-reimagined", "name": "Complementary Reimagined" },
-    { "slug": "bsl-shaders", "name": "BSL Shaders" },
-    { "slug": "sildurs-vibrant-shaders", "name": "Sildur's Vibrant" }
+    {
+      "slug": "complementary-reimagined",
+      "name": "Complementary Reimagined"
+    },
+    {
+      "slug": "bsl-shaders",
+      "name": "BSL Shaders"
+    },
+    {
+      "slug": "sildurs-vibrant-shaders",
+      "name": "Sildur's Vibrant"
+    }
   ]
 }

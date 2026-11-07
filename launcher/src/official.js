@@ -14,6 +14,7 @@ const { syncMods, writeShaderConfig } = require('./pack');
 const companion = require('./companion');
 const { ensureMavenFile } = require('./net');
 const { parseServer } = require('./game');
+const { resolveForge } = require('./forge');
 
 const PROFILE_ID = 'nova-pack';
 
@@ -41,7 +42,8 @@ function run(cmd, args, log) {
 /**
  * @returns {Promise<{mcDir: string, versionId: string}>}
  */
-async function installIntoOfficial({ gameDir, dataDir, packDir, manifest, settings, log, progress }) {
+async function installIntoOfficial({ gameDir, dataDir, packDir, manifest: baseManifest, settings, log, progress }) {
+  const manifest = { ...baseManifest, forge: await resolveForge(baseManifest, dataDir, log) };
   const mcDir = officialDir();
   fs.mkdirSync(mcDir, { recursive: true });
   const profilesFile = path.join(mcDir, 'launcher_profiles.json');

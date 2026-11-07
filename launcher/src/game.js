@@ -7,6 +7,7 @@ const { ensureJava } = require('./java');
 const { ensureMavenFile } = require('./net');
 const { syncMods, writeShaderConfig } = require('./pack');
 const companion = require('./companion');
+const { resolveForge } = require('./forge');
 
 function parseServer(input) {
   const s = (input || '').trim();
@@ -40,7 +41,8 @@ async function ensureForge(gameDir, mc, forge, log, progress) {
  * @param {Function} o.onClose   (exitCode)
  */
 async function launch(o) {
-  const { gameDir, dataDir, packDir, manifest, settings, log, progress } = o;
+  const { gameDir, dataDir, packDir, settings, log, progress } = o;
+  const manifest = { ...o.manifest, forge: await resolveForge(o.manifest, dataDir, log) };
   fs.mkdirSync(gameDir, { recursive: true });
 
   const javaPath = settings.javaPath && fs.existsSync(settings.javaPath)
