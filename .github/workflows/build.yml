@@ -72,6 +72,10 @@ jobs:
         with:
           name: novacompanion-mod
           path: launcher/build-resources/mods
+      - name: Build azonosító
+        working-directory: launcher
+        shell: bash
+        run: echo "{\"commit\":\"${GITHUB_SHA}\"}" > build-info.json
       - name: Install
         working-directory: launcher
         run: npm ci

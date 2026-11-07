@@ -42,7 +42,8 @@
       "modpack.json",
       "src/**/*",
       "renderer/**/*",
-      "package.json"
+      "package.json",
+      "build-info.json"
     ],
     "extraResources": [
       {

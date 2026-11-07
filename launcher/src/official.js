@@ -52,7 +52,10 @@ async function installIntoOfficial({ gameDir, dataDir, packDir, manifest, settin
   const versionId = forgeVersionId(manifest);
   const versionJson = path.join(mcDir, 'versions', versionId, `${versionId}.json`);
   if (!fs.existsSync(versionJson)) {
-    const javaPath = settings.javaPath && fs.existsSync(settings.javaPath) ? settings.javaPath : await ensureJava(dataDir, log, progress);
+    // a Forge telepítőhöz bármelyik Java 17–21 jó (a hivatalos launcheré is)
+    const javaPath = settings.javaPath && fs.existsSync(settings.javaPath)
+      ? settings.javaPath
+      : await ensureJava(dataDir, log, progress, { maxMajor: 21 });
     const javaCli = javaPath.replace(/javaw\.exe$/i, 'java.exe');
     const name = `forge-${manifest.minecraft}-${manifest.forge}-installer.jar`;
     const installer = path.join(gameDir, 'installers', name);

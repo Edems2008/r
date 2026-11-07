@@ -31,6 +31,78 @@ function findJavaBinary(dir) {
   return null;
 }
 
+function javaCli(bin) {
+  return bin.replace(/javaw\.exe$/i, 'java.exe');
+}
+
+/** A Java fő verziószáma (pl. 17), vagy 0 ha nem futtatható. */
+async function javaMajor(bin) {
+  try {
+    const r = await run(javaCli(bin), ['-version'], { windowsHide: true, timeout: 15000 });
+    const out = `${r.stderr || ''}${r.stdout || ''}`;
+    const m = out.match(/version "(\d+)(?:\.(\d+))?/);
+    if (!m) return 0;
+    return m[1] === '1' ? Number(m[2]) : Number(m[1]);
+  } catch {
+    return 0;
+  }
+}
+
+function listDirs(dir) {
+  try { return fs.readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => path.join(dir, e.name)); } catch { return []; }
+}
+
+/**
+ * Már telepített Java keresése, hogy ne kelljen letölteni:
+ * a hivatalos Minecraft Launcher saját Java-ja (java-runtime-gamma = Java 17), JAVA_HOME, és a szokásos telepítési helyek.
+ */
+function candidateJavas() {
+  const exe = process.platform === 'win32' ? 'javaw.exe' : 'java';
+  const out = [];
+  const add = (p) => { if (p && fs.existsSync(p) && !out.includes(p)) out.push(p); };
+  const runtimeRoots = [];
+  if (process.platform === 'win32') {
+    const appdata = process.env.APPDATA || '';
+    const local = process.env.LOCALAPPDATA || '';
+    runtimeRoots.push(
+      path.join(appdata, '.minecraft', 'runtime'),
+      path.join(local, 'Packages', 'Microsoft.4297127D64EC6_8wekyb3d8bbwe', 'LocalCache', 'Local', 'runtime'),
+      'C:\\Program Files (x86)\\Minecraft Launcher\\runtime',
+      'C:\\Program Files\\Minecraft Launcher\\runtime');
+  } else if (process.platform === 'darwin') {
+    runtimeRoots.push(path.join(process.env.HOME || '', 'Library', 'Application Support', 'minecraft', 'runtime'));
+  } else {
+    runtimeRoots.push(path.join(process.env.HOME || '', '.minecraft', 'runtime'));
+  }
+  for (const root of runtimeRoots) {
+    for (const name of ['java-runtime-gamma', 'java-runtime-gamma-snapshot', 'java-runtime-beta', 'java-runtime-delta']) {
+      for (const plat of listDirs(path.join(root, name))) {
+        add(findJavaBinary(plat));
+      }
+    }
+  }
+  if (process.env.JAVA_HOME) add(path.join(process.env.JAVA_HOME, 'bin', exe));
+  if (process.platform === 'win32') {
+    for (const base of ['C:\\Program Files\\Eclipse Adoptium', 'C:\\Program Files\\Java', 'C:\\Program Files\\Microsoft',
+      'C:\\Program Files\\Zulu', 'C:\\Program Files\\BellSoft', 'C:\\Program Files\\Amazon Corretto']) {
+      for (const d of listDirs(base)) add(path.join(d, 'bin', exe));
+    }
+  }
+  return out;
+}
+
+/** Telepített Java a megadott verziótartományban (alapból pontosan 17). */
+async function findInstalledJava(minMajor = 17, maxMajor = 17, log = () => {}) {
+  for (const bin of candidateJavas()) {
+    const major = await javaMajor(bin);
+    if (major >= minMajor && major <= maxMajor) {
+      log(`Telepített Java ${major} használata: ${bin}`);
+      return bin;
+    }
+  }
+  return null;
+}
+
 /** Az Adoptium API megadja a pontos letöltési linket, méretet és SHA-256 ellenőrzőösszeget. */
 async function resolvePackage(os, arch) {
   const q = new URLSearchParams({ architecture: arch, image_type: 'jre', os, vendor: 'eclipse' });
@@ -62,16 +134,20 @@ async function extract(archive, dir, log) {
       lastErr = new Error(`${name}: nem található a java a kicsomagolt fájlok között`);
     } catch (e) {
       lastErr = e;
-      log(`Kicsomagolás (${name}) nem sikerült, másik módszer…`);
+      log(`Kicsomagolás (${name}) nem sikerült: ${String((e && (e.stderr || e.message)) || e).trim().slice(0, 300)}`);
     }
   }
   throw lastErr;
 }
 
-async function ensureJava(baseDir, log, progress) {
+async function ensureJava(baseDir, log, progress, { maxMajor = 17 } = {}) {
   const dir = path.join(baseDir, 'runtime', 'java17');
   const existing = fs.existsSync(dir) && findJavaBinary(dir);
-  if (existing) return existing;
+  if (existing && await javaMajor(existing) >= 17) return existing;
+
+  // 1) már telepített Java (pl. a hivatalos Minecraft Launcheré) – nem kell letölteni
+  const installed = await findInstalledJava(17, maxMajor, log);
+  if (installed) return installed;
 
   const { os, arch } = platformInfo();
   const pkg = await resolvePackage(os, arch);
@@ -92,7 +168,7 @@ async function ensureJava(baseDir, log, progress) {
 
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(dir, { recursive: true });
-  log('Java kicsomagolása…');
+  log(`Java kicsomagolása (${path.basename(archive)}, ${fs.statSync(archive).size} bájt, ellenőrzőösszeg rendben)…`);
   await extract(archive, dir, log);
   fs.rmSync(archive, { force: true });
   const bin = findJavaBinary(dir);
@@ -102,4 +178,4 @@ async function ensureJava(baseDir, log, progress) {
   return bin;
 }
 
-module.exports = { ensureJava };
+module.exports = { ensureJava, findInstalledJava, javaMajor };

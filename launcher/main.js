@@ -10,6 +10,8 @@ const companion = require('./src/companion');
 const official = require('./src/official');
 
 const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'modpack.json'), 'utf8'));
+let BUILD = 'fejlesztői';
+try { BUILD = JSON.parse(fs.readFileSync(path.join(__dirname, 'build-info.json'), 'utf8')).commit.slice(0, 7); } catch { /* helyi futtatás */ }
 const DATA_DIR = path.join(app.getPath('appData'), '.novalauncher');
 const GAME_DIR = path.join(DATA_DIR, 'game');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
@@ -79,7 +81,7 @@ app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(
 
 // ---- IPC ----
 ipcMain.handle('app:info', () => ({
-  version: app.getVersion(),
+  version: `${app.getVersion()} (build ${BUILD})`,
   pack: { name: manifest.name, minecraft: manifest.minecraft, forge: manifest.forge, mods: manifest.modrinth, shaderpacks: manifest.shaderpacks },
   totalRamGb,
   gameDir: GAME_DIR,
@@ -132,6 +134,7 @@ ipcMain.handle('java:pick', async () => {
 
 ipcMain.handle('game:play', async () => {
   if (running) return { ok: false, error: 'A játék már fut.' };
+  log(`Nova Launcher ${app.getVersion()} (build ${BUILD}) • ${process.platform}/${process.arch}`);
   running = true;
   send('game:state', 'preparing');
   try {
@@ -166,6 +169,7 @@ ipcMain.handle('game:play', async () => {
 // Telepítés a hivatalos Minecraft Launcherbe (bejelentkezés nélkül – a hivatalos launcher fiókja indítja a játékot)
 ipcMain.handle('official:install', async () => {
   if (running) return { ok: false, error: 'Épp fut egy telepítés vagy a játék.' };
+  log(`Nova Launcher ${app.getVersion()} (build ${BUILD}) • telepítés a hivatalos launcherbe`);
   running = true;
   send('game:state', 'preparing');
   try {
