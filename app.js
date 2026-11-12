@@ -336,6 +336,13 @@
     const released = g.status === "released";
     const shots = shotsOf(g);
     lightboxShots = shots;
+    if (typeof THEME.renderGame === "function") {
+      // a dizájn-változat saját adatlap-felépítést ad (pl. v4/gamepage.js)
+      view.innerHTML = THEME.renderGame(g, { ...window.APP, shots, released, trailer: trailerHTML(g), studio: full });
+      renderCart();
+      if (typeof THEME.afterRenderGame === "function") THEME.afterRenderGame(view, g);
+      return;
+    }
     view.innerHTML = `
       <section class="game-hero">
         <div class="game-hero-bg"><img src="${esc(THEME.art === "scene" ? window.APP.bgOf(g) : coverOf(g))}" alt=""></div>

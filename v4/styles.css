@@ -265,3 +265,91 @@ h1, h2, h3, h4 { font-family: var(--font-d); line-height: 1.05; text-wrap: balan
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal, .stage-info > * { opacity: 1; transform: none; }
 }
+
+/* ===================================================================
+   JÁTÉK ADATLAP — fejezetes felépítés (v4/gamepage.js)
+   Teljes képernyős borító → fejezetek egymás alatt → vízszintes képsáv,
+   alul rögzített vásárlósáv, oldalt fejezetjelző.
+   =================================================================== */
+#game-view { padding-bottom: 120px; }
+
+.gp-cover { position: relative; height: 100vh; height: 100svh; min-height: 560px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; text-align: center; padding: 96px var(--pad) 190px; overflow: hidden; }
+.gp-bg { position: absolute; inset: 0; z-index: -1; }
+.gp-bg img { width: 100%; height: 100%; object-fit: cover; animation: gp-zoom 24s ease-out both; }
+@keyframes gp-zoom { from { transform: scale(1.14); } }
+.gp-bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 70%, rgba(5, 6, 15, 0.55), transparent), linear-gradient(0deg, var(--bg) 0%, rgba(5, 6, 15, 0.35) 38%, transparent 60%), linear-gradient(180deg, rgba(5, 6, 15, 0.55), transparent 24%); }
+.gp-cover .back { position: absolute; top: 88px; left: var(--pad); margin: 0; }
+.gp-cover-text > * { animation: gp-rise 0.9s var(--ease) both; }
+.gp-cover-text > :nth-child(2) { animation-delay: 0.1s; }
+.gp-cover-text > :nth-child(3) { animation-delay: 0.2s; }
+@keyframes gp-rise { from { opacity: 0; transform: translateY(40px); } }
+.gp-cover h1 { font-size: clamp(2.6rem, 12vw, 11rem); font-weight: 900; line-height: 0.9; margin: 0.8rem 0 1.2rem; overflow-wrap: anywhere; text-shadow: 0 8px 60px rgba(0, 0, 0, 0.55); }
+.gp-tag { font-size: clamp(1.1rem, 2.4vw, 1.7rem); color: #e4e6f2; }
+.gp-scroll { position: absolute; bottom: 118px; left: 50%; translate: -50% 0; width: 28px; height: 46px; border: 2px solid rgba(255, 255, 255, 0.7); border-radius: 16px; }
+.gp-scroll span { position: absolute; left: 50%; top: 8px; width: 4px; height: 9px; margin-left: -2px; border-radius: 2px; background: #fff; animation: gp-wheel 1.6s infinite; }
+@keyframes gp-wheel { to { transform: translateY(16px); opacity: 0; } }
+
+/* oldalsó fejezetjelző */
+.gp-chapters { position: fixed; right: 18px; top: 50%; translate: 0 -50%; z-index: 60; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.gp-chapters button { display: flex; align-items: center; gap: 0.6rem; padding: 0.35em 0.5em 0.35em 0.9em; border-radius: 99px; font-weight: 700; font-size: 0.8rem; color: var(--muted); transition: background 0.25s, color 0.25s; }
+.gp-chapters span { max-width: 0; overflow: hidden; white-space: nowrap; transition: max-width 0.35s var(--ease); }
+.gp-chapters i { font-style: normal; font-family: var(--font-d); font-size: 0.66rem; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); background: rgba(5, 6, 15, 0.6); transition: background 0.25s, color 0.25s, border-color 0.25s; }
+.gp-chapters button:hover, .gp-chapters button.active { color: #fff; background: rgba(5, 6, 15, 0.75); }
+.gp-chapters button:hover span, .gp-chapters button.active span { max-width: 140px; }
+.gp-chapters button.active i { background: var(--g1); border-color: var(--g1); color: #05060f; }
+
+.gp-chapter { max-width: 1180px; margin: 0 auto; padding: clamp(64px, 11vh, 130px) var(--pad) 0; scroll-margin-top: 20px; }
+.gp-wide { max-width: none; padding-inline: 0; }
+.gp-head { display: flex; align-items: baseline; gap: 1.1rem; margin-bottom: clamp(1.4rem, 3vw, 2.4rem); }
+.gp-num { font-family: var(--font-d); font-weight: 900; font-size: clamp(2.6rem, 7vw, 5.5rem); line-height: 0.8; color: transparent; -webkit-text-stroke: 1.5px var(--g1); }
+.gp-head h2 { font-size: clamp(1.3rem, 3vw, 2.2rem); font-weight: 900; }
+.gp-head-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; max-width: 1180px; margin: 0 auto; padding: 0 var(--pad); }
+.gp-arrows { display: flex; gap: 8px; margin-bottom: clamp(1.4rem, 3vw, 2.4rem); }
+.gp-arrows .icon-btn { width: 48px; height: 48px; font-size: 1.6rem; }
+
+/* mozi */
+.gp-cinema { max-width: 1400px; }
+.gp-screen { padding: clamp(8px, 1.2vw, 16px); border-radius: clamp(20px, 3vw, 36px); background: #000; box-shadow: 0 0 0 1px var(--line), 0 50px 140px -30px var(--g1), 0 0 220px -60px var(--g2); }
+.gp-screen .trailer-frame { border-radius: clamp(14px, 2.2vw, 24px); }
+
+/* leírás */
+.gp-lead p:first-child { font-family: var(--font-d); font-weight: 700; font-size: clamp(1.25rem, 3vw, 2.3rem); line-height: 1.25; }
+.gp-lead p + p { margin-top: 1.4rem; font-size: 1.15rem; color: var(--muted); max-width: 62ch; }
+.gp-features { list-style: none; counter-reset: f; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 16px; margin-top: clamp(2rem, 5vw, 3.6rem); }
+.gp-features li { counter-increment: f; min-height: 170px; display: flex; flex-direction: column; justify-content: space-between; gap: 1.4rem; padding: 1.3rem; border-radius: 24px; background: var(--glass); border: 1px solid var(--line); font-weight: 700; font-size: 1.05rem; line-height: 1.35; transition: transform 0.35s var(--ease), background 0.35s; }
+.gp-features li::before { content: counter(f, decimal-leading-zero); font-family: var(--font-d); font-size: 0.8rem; color: var(--g1); }
+.gp-features li:hover { transform: translateY(-8px); background: linear-gradient(160deg, color-mix(in srgb, var(--g1) 30%, transparent), color-mix(in srgb, var(--g2) 26%, transparent)); }
+
+/* vízszintes képsáv */
+.gp-strip { display: flex; gap: 16px; overflow-x: auto; padding: 14px var(--pad) 26px; scroll-snap-type: x mandatory; scroll-padding-inline: var(--pad); scrollbar-width: none; }
+.gp-strip::-webkit-scrollbar { display: none; }
+.gp-strip button { flex: none; width: min(78vw, 760px); aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; scroll-snap-align: start; transition: transform 0.4s var(--ease), box-shadow 0.4s; }
+.gp-strip button:hover { transform: translateY(-8px); box-shadow: 0 0 0 3px #fff, 0 24px 60px -14px var(--g1); }
+.gp-strip img { width: 100%; height: 100%; object-fit: cover; }
+
+/* adatok */
+.gp-specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); border-top: 1px solid var(--line); }
+.gp-specs div { padding: 1.4rem 1.2rem 1.4rem 0; border-bottom: 1px solid var(--line); }
+.gp-specs dt { color: var(--g1); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.5rem; }
+.gp-specs dd { font-family: var(--font-d); font-weight: 700; font-size: clamp(1rem, 1.8vw, 1.35rem); line-height: 1.3; }
+
+/* alul rögzített vásárlósáv */
+.gp-dock { position: fixed; left: 50%; bottom: 16px; z-index: 70; translate: -50% 0; width: min(880px, calc(100% - 24px)); display: flex; align-items: center; gap: 1rem; padding: 10px 12px 10px 10px; border-radius: 26px; background: rgba(20, 22, 38, 0.82); border: 1px solid var(--line); backdrop-filter: blur(26px) saturate(1.4); -webkit-backdrop-filter: blur(26px) saturate(1.4); box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.7), 0 0 60px -20px var(--g1); animation: gp-dock 0.7s 0.3s var(--ease) both; }
+@keyframes gp-dock { from { transform: translateY(140%); } }
+.gp-dock > img { width: 92px; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 16px; flex: none; }
+.gp-dock-text { flex: 1; min-width: 0; }
+.gp-dock-text b { display: block; font-family: var(--font-d); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gp-dock-actions { display: flex; gap: 8px; flex: none; }
+.gp-dock .btn { padding: 0.85em 1.3em; white-space: nowrap; }
+
+@media (max-width: 1100px) { .gp-chapters { display: none; } }
+@media (max-width: 760px) {
+  #game-view { padding-bottom: 150px; }
+  .gp-cover { padding-bottom: 210px; }
+  .gp-scroll { display: none; }
+  .gp-dock { flex-wrap: wrap; gap: 8px 12px; border-radius: 22px; padding: 10px; }
+  .gp-dock > img { width: 60px; border-radius: 12px; }
+  .gp-dock-actions { flex: 1 1 100%; }
+  .gp-dock-actions .btn { flex: 1; font-size: 0.86rem; padding: 0.85em 0.8em; }
+  .gp-strip button { width: 84vw; border-radius: 18px; }
+}
