@@ -49,12 +49,38 @@
     return uri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">${r}</svg>`);
   }
 
+  function sceneArt(game, variant, withTitle, a, b, rnd) {
+    const ridge = (base, amp, step) => {
+      let pts = `0,500 0,${base}`, y = base;
+      for (let x = 0; x <= 800; x += step) { y = Math.max(base - amp, Math.min(base + amp * 0.4, y + (rnd() - 0.5) * amp)); pts += ` ${x},${y.toFixed(0)}`; }
+      return pts + " 800,500";
+    };
+    const sx = 180 + rnd() * 440, sy = 170 + rnd() * 90, sr = 40 + rnd() * 34;
+    let stars = "";
+    for (let i = 0; i < 70; i++) stars += `<circle cx="${(rnd() * 800).toFixed(0)}" cy="${(rnd() * 260).toFixed(0)}" r="${(0.4 + rnd() * 1.2).toFixed(1)}" fill="#fff" opacity="${(0.2 + rnd() * 0.7).toFixed(2)}"/>`;
+    const t = withTitle === true
+      ? `<text x="400" y="110" text-anchor="middle" font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="${Math.min(70, 880 / game.title.length)}" fill="#fff" letter-spacing="3">${esc(game.title)}</text>`
+      : withTitle === false ? `<text x="30" y="46" font-family="Arial,sans-serif" font-weight="700" font-size="20" fill="#fff" opacity=".6" letter-spacing="4">KÉP ${variant}</text>` : "";
+    return uri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#05060f"/><stop offset=".55" stop-color="${b}" stop-opacity=".55"/><stop offset="1" stop-color="${a}"/></linearGradient>
+        <radialGradient id="h"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".25" stop-color="${a}" stop-opacity=".8"/><stop offset="1" stop-color="${a}" stop-opacity="0"/></radialGradient>
+      </defs>
+      <rect width="800" height="500" fill="#05060f"/><rect width="800" height="500" fill="url(#s)"/>${stars}
+      <circle cx="${sx}" cy="${sy}" r="${sr * 3}" fill="url(#h)" opacity=".55"/><circle cx="${sx}" cy="${sy}" r="${sr}" fill="#fff" opacity=".92"/>
+      <polygon points="${ridge(300, 70, 40)}" fill="${b}" opacity=".55"/>
+      <polygon points="${ridge(350, 60, 32)}" fill="#0b0c1c" opacity=".55"/>
+      <polygon points="${ridge(400, 50, 26)}" fill="#090a16" opacity=".8"/>
+      <polygon points="${ridge(450, 36, 20)}" fill="#05060f"/>${t}</svg>`);
+  }
+
   function art(game, variant = 0, withTitle = true) {
     const [a, b] = game.colors || ["#00f0ff", "#ff00e5"];
     let seed = [...game.id].reduce((n, c) => n + c.charCodeAt(0), 0) + variant * 97;
     const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
     if (THEME.art === "pixel") return pixelArt(game, variant, withTitle, a, b, rnd);
     if (THEME.art === "poster") return posterArt(game, variant, withTitle, a, b, rnd);
+    if (THEME.art === "scene") return sceneArt(game, variant, withTitle, a, b, rnd);
     let shapes = "";
     for (let i = 0; i < 9; i++) {
       const x = rnd() * 800, y = rnd() * 500, s = 40 + rnd() * 160, c = rnd() > 0.5 ? a : b;
@@ -312,7 +338,7 @@
     lightboxShots = shots;
     view.innerHTML = `
       <section class="game-hero">
-        <div class="game-hero-bg"><img src="${esc(coverOf(g))}" alt=""></div>
+        <div class="game-hero-bg"><img src="${esc(THEME.art === "scene" ? window.APP.bgOf(g) : coverOf(g))}" alt=""></div>
         <div class="game-hero-inner">
           <a class="back" href="#games">← Vissza a játékokhoz</a>
           <h1>${esc(g.title)}</h1>
@@ -507,6 +533,9 @@
     resize();
     frame();
   })();
+
+  // A dizájn-változatok saját szkriptjei (pl. v4/launcher.js) ezeket használhatják
+  window.APP = { coverOf, shotsOf, priceHTML, renderCart, esc, bgOf: (g) => asset(g.cover) || art(g, 0, null) };
 
   /* ---------- Indítás ---------- */
   renderFilters();
