@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VOIDPULSE STUDIOS — Játékok, amik nem engednek el</title>
+  <meta name="description" content="Független játékfejlesztő stúdió. Fedezd fel és vásárold meg játékainkat közvetlenül tőlünk vagy Steamen." />
+  <meta name="theme-color" content="#07070d" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <!-- NAVIGÁCIÓ -->
+  <header class="nav" id="nav">
+    <a class="logo" href="#top" aria-label="Főoldal">
+      <span class="logo-mark" aria-hidden="true"></span>
+      <span class="logo-text"><b data-studio="name"></b><i data-studio="suffix"></i></span>
+    </a>
+    <nav class="nav-links" id="nav-links" aria-label="Fő navigáció">
+      <a href="#games">Játékok</a>
+      <a href="#about">Rólunk</a>
+      <a href="#team">Csapat</a>
+      <a href="#contact">Kapcsolat</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="cart-btn" id="cart-open" aria-label="Kosár megnyitása">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6 5 2H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>
+        <span class="cart-count" id="cart-count" hidden>0</span>
+      </button>
+      <button class="burger" id="burger" aria-label="Menü" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <!-- FŐOLDAL -->
+  <main id="home-view">
+    <section class="hero" id="top">
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero-inner">
+        <p class="eyebrow"><span class="dot"></span> Független játékfejlesztő stúdió</p>
+        <h1 class="glitch" id="hero-title"></h1>
+        <p class="hero-tagline" data-studio="tagline"></p>
+        <p class="hero-text" data-studio="heroText"></p>
+        <div class="hero-cta">
+          <a class="btn btn-rgb" href="#games"><span>Játékok felfedezése</span></a>
+          <a class="btn btn-ghost" href="#about">Ismerd meg a csapatot</a>
+        </div>
+      </div>
+      <a class="scroll-hint" href="#games" aria-label="Görgess a játékokhoz"><span></span></a>
+    </section>
+
+    <div class="marquee" aria-hidden="true"><div class="marquee-track" id="marquee"></div></div>
+
+    <section class="section" id="games">
+      <header class="section-head reveal">
+        <p class="kicker">// 01 — Katalógus</p>
+        <h2>Játékaink</h2>
+        <p class="section-sub">Vásárolj közvetlenül tőlünk, vagy vidd haza Steamen — te döntesz.</p>
+      </header>
+      <div class="filters reveal" id="filters" role="group" aria-label="Szűrés műfaj szerint"></div>
+      <div class="games-grid" id="games-grid"></div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="about-wrap">
+        <div class="about-text reveal">
+          <p class="kicker">// 02 — A stúdió</p>
+          <h2>Rólunk</h2>
+          <div id="about-text"></div>
+        </div>
+        <div class="stats reveal" id="stats"></div>
+      </div>
+    </section>
+
+    <section class="section" id="team">
+      <header class="section-head reveal">
+        <p class="kicker">// 03 — Emberek</p>
+        <h2>A csapat</h2>
+        <p class="section-sub">Akik a játékok mögött állnak.</p>
+      </header>
+      <div class="team-grid" id="team-grid"></div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="contact-card rgb-border reveal">
+        <p class="kicker">// 04 — Kapcsolat</p>
+        <h2>Beszéljünk!</h2>
+        <p class="section-sub">Sajtó, együttműködés, visszajelzés vagy csak egy „hello” — írj nekünk bátran.</p>
+        <a class="btn btn-rgb" id="contact-mail" href="#"><span>Írj nekünk</span></a>
+        <div class="socials" id="socials"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- JÁTÉK ADATLAP -->
+  <main id="game-view" hidden></main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> <span data-studio="full"></span>. Minden jog fenntartva.</span>
+    <span class="footer-note">A Steam a Valve Corporation védjegye.</span>
+  </footer>
+
+  <!-- KOSÁR -->
+  <div class="overlay" id="overlay" hidden></div>
+  <aside class="drawer" id="cart-drawer" aria-label="Kosár" aria-hidden="true">
+    <header class="drawer-head">
+      <h3>Kosár</h3>
+      <button class="icon-btn" id="cart-close" aria-label="Kosár bezárása">✕</button>
+    </header>
+    <div class="drawer-body" id="cart-items"></div>
+    <footer class="drawer-foot">
+      <div class="total-row"><span>Összesen</span><strong id="cart-total">0 Ft</strong></div>
+      <button class="btn btn-rgb btn-block" id="checkout-open"><span>Tovább a fizetéshez</span></button>
+    </footer>
+  </aside>
+
+  <!-- FIZETÉS -->
+  <div class="modal" id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title" hidden>
+    <div class="modal-box rgb-border">
+      <button class="icon-btn modal-close" data-close-modal aria-label="Bezárás">✕</button>
+      <div id="checkout-content"></div>
+    </div>
+  </div>
+
+  <!-- KÉPNÉZEGETŐ -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="icon-btn lightbox-close" id="lightbox-close" aria-label="Bezárás">✕</button>
+    <button class="lightbox-nav prev" id="lightbox-prev" aria-label="Előző kép">‹</button>
+    <img id="lightbox-img" alt="" />
+    <button class="lightbox-nav next" id="lightbox-next" aria-label="Következő kép">›</button>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
