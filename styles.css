@@ -318,6 +318,8 @@ h1, h2, h3, h4 { font-family: var(--font-d); line-height: 1.1; letter-spacing: 0
 
 .footer { border-top: 1px solid var(--line); padding: 1.6rem clamp(16px, 4vw, 48px); display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; justify-content: space-between; color: var(--muted); font-size: 0.9rem; }
 .footer-note { opacity: 0.6; }
+.variants a { color: var(--c1); }
+.variants a:hover { text-decoration: underline; }
 
 /* ===================== JÁTÉK ADATLAP ===================== */
 #game-view { --g1: var(--c1); --g2: var(--c2); }

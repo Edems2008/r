@@ -2,6 +2,9 @@
   "use strict";
 
   const S = window.STUDIO;
+  // Dizájn-változatok beállításai (a v2/ és v3/ oldalak adják meg)
+  const THEME = window.THEME || {};
+  const asset = (p) => (!p || /^(data:|https?:|\/)/.test(p) ? p : (THEME.base || "") + p);
   const GAMES = window.GAMES;
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -12,10 +15,46 @@
   const byId = (id) => GAMES.find((g) => g.id === id);
 
   /* ---------- Generált helykitöltő grafika (ha nincs saját kép) ---------- */
+  const uri = (svg) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+
+  function pixelArt(game, variant, withTitle, a, b, rnd) {
+    const cs = 25, cols = 32, rows = 20;
+    const cell = (x, y, c, o = 1) => `<rect x="${x * cs}" y="${y * cs}" width="${cs}" height="${cs}" fill="${c}" opacity="${o}"/>`;
+    let r = "";
+    ["#0d0f24", "#151938", "#1e2250", "#2b2a68", "#3b2f7a"].forEach((c, i) => (r += `<rect y="${i * 100}" width="800" height="100" fill="${c}"/>`));
+    for (let i = 0; i < 46; i++) r += `<rect x="${Math.floor(rnd() * 160) * 5}" y="${Math.floor(rnd() * 56) * 5}" width="5" height="5" fill="#fff" opacity="${0.3 + rnd() * 0.7}"/>`;
+    const sx = 7 + Math.floor(rnd() * 18), sy = 7 + Math.floor(rnd() * 3);
+    for (let x = -4; x <= 4; x++) for (let y = -4; y <= 4; y++) if (x * x + y * y <= 17) r += cell(sx + x, sy + y, b, y > 1 && (y + 4) % 2 ? 0.55 : 1);
+    let h = 4 + Math.floor(rnd() * 4);
+    for (let x = 0; x < cols; x++) { h = Math.max(2, Math.min(9, h + Math.floor(rnd() * 3) - 1)); for (let y = rows - h - 3; y < rows; y++) r += cell(x, y, a, y === rows - h - 3 ? 1 : 0.6); }
+    let f = 2 + Math.floor(rnd() * 3);
+    for (let x = 0; x < cols; x++) { f = Math.max(1, Math.min(6, f + Math.floor(rnd() * 3) - 1)); for (let y = rows - f; y < rows; y++) r += cell(x, y, "#1a1c2c"); }
+    const fs = Math.min(64, 860 / game.title.length);
+    const t = withTitle
+      ? `<text x="403" y="125" text-anchor="middle" font-family="'Courier New',monospace" font-weight="900" font-size="${fs}" fill="#1a1c2c">${esc(game.title)}</text><text x="398" y="120" text-anchor="middle" font-family="'Courier New',monospace" font-weight="900" font-size="${fs}" fill="#fff">${esc(game.title)}</text>`
+      : `<text x="400" y="60" text-anchor="middle" font-family="'Courier New',monospace" font-weight="900" font-size="24" fill="#fff" opacity=".7">KÉP ${variant}</text>`;
+    return uri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" shape-rendering="crispEdges">${r}${t}</svg>`);
+  }
+
+  function posterArt(game, variant, withTitle, a, b, rnd) {
+    const flip = variant % 2 === 1, bg = flip ? "#141414" : a, fg = flip ? a : "#141414";
+    const cx = 150 + rnd() * 500, cy = 140 + rnd() * 240, rad = 120 + rnd() * 110;
+    let r = `<rect width="800" height="500" fill="${bg}"/><circle cx="${cx}" cy="${cy}" r="${rad}" fill="${b}"/>`;
+    const x0 = rnd() * 500, w = 200 + rnd() * 240;
+    for (let i = 0; i < 7; i++) r += `<rect x="${x0}" y="${330 + i * 22}" width="${w}" height="9" fill="${fg}"/>`;
+    r += `<circle cx="${800 - cx}" cy="${500 - cy}" r="${rad * 0.35}" fill="none" stroke="${fg}" stroke-width="3"/>`;
+    r += withTitle
+      ? `<text x="40" y="96" font-family="Georgia,'Times New Roman',serif" font-style="italic" font-size="${Math.min(84, 1150 / game.title.length)}" fill="${fg}">${esc(game.title.charAt(0) + game.title.slice(1).toLowerCase())}</text>`
+      : `<text x="40" y="70" font-family="Georgia,serif" font-style="italic" font-size="40" fill="${fg}">№ ${variant}</text>`;
+    return uri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">${r}</svg>`);
+  }
+
   function art(game, variant = 0, withTitle = true) {
     const [a, b] = game.colors || ["#00f0ff", "#ff00e5"];
     let seed = [...game.id].reduce((n, c) => n + c.charCodeAt(0), 0) + variant * 97;
     const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+    if (THEME.art === "pixel") return pixelArt(game, variant, withTitle, a, b, rnd);
+    if (THEME.art === "poster") return posterArt(game, variant, withTitle, a, b, rnd);
     let shapes = "";
     for (let i = 0; i < 9; i++) {
       const x = rnd() * 800, y = rnd() * 500, s = 40 + rnd() * 160, c = rnd() > 0.5 ? a : b;
@@ -37,10 +76,10 @@
       </defs>
       <rect width="800" height="500" fill="#07070d"/><rect width="800" height="500" fill="url(#bg)"/><rect width="800" height="500" fill="url(#sun)"/>
       ${shapes}${lines}${title}</svg>`;
-    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+    return uri(svg);
   }
-  const coverOf = (g) => g.cover || art(g, 0);
-  const shotsOf = (g) => (g.screenshots && g.screenshots.length ? g.screenshots : [1, 2, 3, 4, 5, 6].map((i) => art(g, i, false)));
+  const coverOf = (g) => asset(g.cover) || art(g, 0);
+  const shotsOf = (g) => (g.screenshots && g.screenshots.length ? g.screenshots.map(asset) : [1, 2, 3, 4, 5, 6].map((i) => art(g, i, false)));
 
   /* ---------- Stúdió adatok ---------- */
   const full = `${S.name} ${S.nameSuffix || ""}`.trim();
@@ -51,22 +90,23 @@
   $$('[data-studio="tagline"]').forEach((e) => (e.textContent = S.tagline));
   $$('[data-studio="heroText"]').forEach((e) => (e.textContent = S.heroText));
   const heroTitle = $("#hero-title");
-  heroTitle.textContent = S.name;
-  heroTitle.dataset.text = S.name;
+  if (heroTitle) { heroTitle.textContent = S.name; heroTitle.dataset.text = S.name; }
+  const feature = $("#hero-feature"), fg = GAMES.find((g) => g.status === "released") || GAMES[0];
+  if (feature && fg) feature.innerHTML = `<a href="#/game/${esc(fg.id)}"><img src="${esc(coverOf(fg))}" alt="${esc(fg.title)} borítókép"><span class="feature-text"><small>Kiemelt játék</small><b>${esc(fg.title)}</b><i>${esc(fg.tagline)}</i></span></a>`;
   $("#year").textContent = new Date().getFullYear();
   $("#about-text").innerHTML = S.about.map((p) => `<p>${esc(p)}</p>`).join("");
   $("#stats").innerHTML = S.stats.map((s) => `<div class="stat"><b>${esc(s.value)}</b><span>${esc(s.label)}</span></div>`).join("");
   $("#team-grid").innerHTML = S.team
     .map((m) => {
       const initials = m.name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
-      const av = m.avatar ? `<img src="${esc(m.avatar)}" alt="${esc(m.name)}" loading="lazy">` : `<span>${esc(initials)}</span>`;
+      const av = m.avatar ? `<img src="${esc(asset(m.avatar))}" alt="${esc(m.name)}" loading="lazy">` : `<span>${esc(initials)}</span>`;
       return `<article class="member reveal"><div class="avatar">${av}</div><h3>${esc(m.name)}</h3><p class="role">${esc(m.role)}</p><p>${esc(m.bio)}</p></article>`;
     })
     .join("");
   $("#contact-mail").href = `mailto:${S.email}`;
   $("#socials").innerHTML = S.socials.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.label)}</a>`).join("");
   const words = [...GAMES.map((g) => g.title), "Indie", "Made with ♥", S.name];
-  $("#marquee").innerHTML = [...words, ...words, ...words, ...words].map((w) => `<span>${esc(w)}</span>`).join("");
+  if ($("#marquee")) $("#marquee").innerHTML = [...words, ...words, ...words, ...words].map((w) => `<span>${esc(w)}</span>`).join("");
 
   /* ---------- Kosár ---------- */
   const KEY = "studio-cart-v1";
@@ -259,7 +299,7 @@
   function trailerHTML(g) {
     const t = g.trailer;
     if (t && t.youtube) return `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(t.youtube)}?rel=0" title="${esc(g.title)} trailer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>`;
-    if (t && t.mp4) return `<video src="${esc(t.mp4)}" controls preload="metadata" poster="${esc(coverOf(g))}"></video>`;
+    if (t && t.mp4) return `<video src="${esc(asset(t.mp4))}" controls preload="metadata" poster="${esc(coverOf(g))}"></video>`;
     return `<img src="${esc(coverOf(g))}" alt=""><div class="trailer-empty"><div class="play"></div><b>Trailer hamarosan</b><small>Ide kerül a játék trailer videója (YouTube vagy MP4).</small></div>`;
   }
 
@@ -396,7 +436,7 @@
   /* ---------- 3D kártya döntés + kurzorfény ---------- */
   const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
   function bindTilt() {
-    if (!fine || reduced) return;
+    if (!fine || reduced || THEME.tilt === false) return;
     $$(".game-card").forEach((card) => {
       card.addEventListener("pointermove", (e) => {
         const r = card.getBoundingClientRect();
@@ -406,7 +446,7 @@
       card.addEventListener("pointerleave", () => (card.style.transform = ""));
     });
   }
-  if (fine) {
+  if (fine && $(".cursor-glow")) {
     const glow = $(".cursor-glow");
     window.addEventListener("pointermove", (e) => {
       glow.style.setProperty("--mx", e.clientX + "px");
@@ -416,7 +456,9 @@
 
   /* ---------- Hero részecske-háló ---------- */
   (function heroCanvas() {
-    const c = $("#hero-canvas"), ctx = c.getContext("2d");
+    const c = $("#hero-canvas");
+    if (!c) return;
+    const ctx = c.getContext("2d");
     let w, h, pts = [], raf = 0, hue = 180;
     const mouse = { x: -999, y: -999 };
     function resize() {

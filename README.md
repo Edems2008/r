@@ -4,6 +4,18 @@ Statikus weboldal egy játékfejlesztő csapatnak: játékkatalógus, játék-ad
 (leírás, trailer, képgaléria), kosár, Steam linkek és csapatbemutató.
 Nincs build lépés és nincs függőség — az `index.html` megnyitásával fut.
 
+## Három dizájn-változat
+
+Ugyanaz a tartalom és működés, három teljesen eltérő stílusban:
+
+- `index.html` — **Neon**: sötét, RGB fényekkel, glitch címmel
+- `v2/index.html` — **Pixel**: retró 8-bites játéktermi stílus
+- `v3/index.html` — **Magazin**: világos, letisztult, nagy betűs editorial stílus
+
+Mindhárom a közös `data.js` és `app.js` fájlt használja, így a tartalmat elég egy helyen
+átírni. Ha választottál, a másik kettő mappája/fájljai törölhetők (a láblécben lévő
+„Dizájn:” váltó linkekkel együtt).
+
 ## Tartalom szerkesztése
 
 Minden szöveg és adat a **`data.js`** fájlban van:
